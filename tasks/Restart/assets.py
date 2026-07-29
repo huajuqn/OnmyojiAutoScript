@@ -111,7 +111,7 @@ class RestartAssets:
 	# 登录时候不观看CG视频 
 	I_WATCH_VIDEO_CANCEL = RuleImage(roi_front=(466,396,130,61), roi_back=(466,396,130,61), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_watch_video_cancel.png")
 	# 指定角色进入游戏,默认第一个 
-	I_LOGIN_SPECIFIC_SERVE = RuleImage(roi_front=(0,0,120,120), roi_back=(0,0,120,120), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_login_specific_serve.png")
+	I_LOGIN_SPECIFIC_SERVE = RuleImage(roi_front=(1121,53,52,51), roi_back=(1082,33,120,120), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_login_specific_serve.png")
 	# 下载插画 
 	I_LOGIN_LOAD_DOWN = RuleImage(roi_front=(711,450,153,58), roi_back=(711,450,153,58), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_login_load_down.png")
 	# 登录界面 弹出框 前往绑定 手机 
@@ -132,6 +132,8 @@ class RestartAssets:
 	I_EARLY_SERVER_CANCEL = RuleImage(roi_front=(435,404,172,56), roi_back=(435,404,172,56), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_early_server_cancel.png")
 	# 取消继续战斗 
 	I_CANCEL_BATTLE = RuleImage(roi_front=(471,395,129,55), roi_back=(367,227,545,296), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_cancel_battle.png")
+	# 开屏登录用户中心 
+	I_USER_CENTER = RuleImage(roi_front=(1123,59,48,40), roi_back=(1105,28,85,117), threshold=0.8, method="Template matching", file="./tasks/Restart/login/login_user_center.png")
 
 
 	# Ocr Rule Assets
@@ -143,5 +145,7 @@ class RestartAssets:
 	O_LOGIN_SKIP_1 = RuleOcr(roi=(1046,35,130,37), area=(1046,35,130,37), mode="Single", method="Default", keyword="点击屏幕跳过", name="login_skip_1")
 	# 登录指定角色，默认第一个 
 	O_LOGIN_SPECIFIC_SERVE = RuleOcr(roi=(110,120,350,600), area=(110,120,350,600), mode="Full", method="Default", keyword="", name="login_specific_serve")
+	# 加载视频或链接服务器提示 
+	O_LOAD_NOTE = RuleOcr(roi=(449,636,377,45), area=(416,626,428,66), mode="Single", method="Default", keyword="", name="load_note")
 
 

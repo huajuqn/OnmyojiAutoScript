@@ -303,7 +303,12 @@ Item {
             onClicked: {
                 const i = ruleFile.file.lastIndexOf("/")
                 const imagepath = ruleFile.file.substring(0, i)
-                mirrorImage.save_target_image(ruleFile.currentItem.roiFront, imagepath +"/"+ruleFile.currentItem.imageName)
+                var imageName = ruleFile.currentItem.imageName
+                if(!imageName || imageName === ""){
+                    imageName = ruleFile.folder + "_" + ruleFile.currentItem.itemName + ".png"
+                    ruleFile.currentItem.imageName = imageName
+                }
+                mirrorImage.save_target_image(ruleFile.currentItem.roiFront, imagepath + "/" + imageName)
                 showSuccess("Save target image")
             }
         }

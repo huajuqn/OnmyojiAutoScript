@@ -387,12 +387,24 @@ class GeneralInvite(BaseTask, GeneralInviteAssets):
                 logger.warning('No recent friend')
                 return False
             recent_index = friend_class.index('最近')
-            while recent_index == 1:
+            flag_on_list = [self.I_FLAG_1_ON, self.I_FLAG_2_ON, self.I_FLAG_3_ON, self.I_FLAG_4_ON]
+            flag_off_list = [self.I_FLAG_1_OFF, self.I_FLAG_2_OFF, self.I_FLAG_3_OFF, self.I_FLAG_4_OFF]
+            flag_on = flag_on_list[recent_index] if recent_index < len(flag_on_list) else self.I_FLAG_2_ON
+            flag_off = flag_off_list[recent_index] if recent_index < len(flag_off_list) else self.I_FLAG_2_OFF
+
+            # 切换标签，带超时保护防止死循环
+            timer_switch = Timer(10)
+            timer_switch.start()
+            while 1:
                 self.screenshot()
-                if self.appear(self.I_FLAG_2_ON):
+                if self.appear(flag_on):
+                    logger.info('Already in recent friend tab')
                     break
-                if self.appear_then_click(self.I_FLAG_2_OFF, interval=1):
+                if self.appear_then_click(flag_off, interval=1):
                     continue
+                if timer_switch.reached():
+                    logger.warning("Switch to recent friend tab timeout, continue anyway")
+                    break
 
             logger.info(f'Now find friend in ”最近“')
             sleep(1)

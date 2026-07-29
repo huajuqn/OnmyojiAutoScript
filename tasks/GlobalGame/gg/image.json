@@ -88,5 +88,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "description"
+  },
+  {
+    "itemName": "activity_material",
+    "imageName": "gg_activity_material.png",
+    "roiFront": "607,243,62,62",
+    "roiBack": "595,236,88,82",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "description"
   }
 ]

@@ -16,5 +16,41 @@
     "method": "Default",
     "keyword": "",
     "description": "阵容匹配"
+  },
+  {
+    "itemName": "ss_records_title",
+    "roiFront": "70,0,170,62",
+    "roiBack": "70,0,170,62",
+    "mode": "Full",
+    "method": "Default",
+    "keyword": "式神录",
+    "description": "式神录页面固定文字标志"
+  },
+  {
+    "itemName": "ss_preset_button",
+    "roiFront": "315,55,130,80",
+    "roiBack": "315,55,130,80",
+    "mode": "Full",
+    "method": "Default",
+    "keyword": "预设",
+    "description": "式神录预设按钮固定文字"
+  },
+  {
+    "itemName": "ss_team_preset_title",
+    "roiFront": "660,48,250,85",
+    "roiBack": "660,48,250,85",
+    "mode": "Full",
+    "method": "Default",
+    "keyword": "队伍预设",
+    "description": "队伍预设界面固定文字标志"
+  },
+  {
+    "itemName": "ss_switch_confirm",
+    "roiFront": "650,385,220,100",
+    "roiBack": "650,385,220,100",
+    "mode": "Full",
+    "method": "Default",
+    "keyword": "确定",
+    "description": "更换预设御魂确认按钮固定文字"
   }
 ]

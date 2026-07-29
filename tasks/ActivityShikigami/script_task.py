@@ -180,14 +180,15 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         """
         logger.hr(f'Start run climb type PASS', 1)
         self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
-                       stop=self.I_CHECK_BATTLE_MAIN, interval=1)
-        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_CHECK_BATTLE_MAIN)
+                       stop=self.I_FIRE_BUTTON, interval=1)
+        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('pass')
 
         ocr_limit_timer = Timer(1).start()
         click_limit_timer = Timer(4).start()
         while 1:
             self.screenshot()
+            self.switch_climb_mode_in_game(self.climb_type)
             self.put_status()
             # --------------------------------------------------------------
             if (self.appear_then_click(self.I_UI_CONFIRM, interval=0.5)
@@ -198,7 +199,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             if not ocr_limit_timer.reached():
                 continue
             ocr_limit_timer.reset()
-            if not self.ocr_appear(self.O_FIRE):
+            if not self.appear(self.I_FIRE_BUTTON):
                 continue
             #  --------------------------------------------------------------
             self.lock_team(self.conf.general_battle)
@@ -218,20 +219,20 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         """
         logger.hr(f'Start run climb type AP')
         self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
-                       stop=self.I_CHECK_BATTLE_MAIN, interval=1)
-        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_CHECK_BATTLE_MAIN)
+                       stop=self.I_FIRE_BUTTON, interval=1)
+        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('ap')
 
         ocr_limit_timer = Timer(1).start()
         while 1:
             self.screenshot()
+            self.switch_climb_mode_in_game(self.climb_type)
             self.put_status()
             # --------------------------------------------------------------
             if not ocr_limit_timer.reached():
                 continue
             ocr_limit_timer.reset()
-            if not self.ocr_appear(self.O_FIRE):
-                self.appear_then_click(self.I_CHECK_BATTLE_MAIN, interval=4)
+            if not self.appear(self.I_FIRE_BUTTON):
                 continue
             #  --------------------------------------------------------------
             self.lock_team(self.conf.general_battle)
@@ -288,7 +289,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             if (self.appear_then_click(self.I_UI_CONFIRM_SAMLL, interval=1) or
                     self.appear_then_click(self.I_UI_CONFIRM, interval=1) ):
                 continue
-            if self.ocr_appear_click(self.O_FIRE, interval=2):
+            if self.appear_then_click(self.I_FIRE_BUTTON, interval=2):
                 click_times += 1
                 logger.info(f'Try click fire, remain times[{max_times - click_times}]')
                 continue
@@ -311,7 +312,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             if ok_cnt > max_retry:
                 break
             # 识别到挑战说明已经退出战斗
-            if ok_cnt > 0 and self.ocr_appear(self.O_FIRE):
+            if ok_cnt > 0 and self.appear(self.I_FIRE_BUTTON):
                 return True
             # 战斗失败
             if self.appear(self.I_FALSE):
@@ -346,7 +347,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             return
         logger.hr('Start switch soul', 2)
         conf.validate_switch_soul()
-        self.ui_click(enter_button, stop=self.I_CHECK_RECORDS, interval=1)
+        self.ui_click(enter_button, stop=self.O_CHECK_RECORDS_TITLE, interval=1)
         if enable_by_name:
             group, team = getattr(conf, f"{self.climb_type}_group_team_name").split(",")
             self.run_switch_soul_by_name(group, team)
@@ -360,6 +361,8 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             'ap': self.I_CLIMB_MODE_AP,
             'pass': self.I_CLIMB_MODE_PASS,
         }
+        if self.appear(map_check[mode]):
+            return
         logger.info(f'Switch climb mode to {mode}')
         self.ui_click(self.I_CLIMB_MODE_SWITCH, stop=map_check[mode], interval=1.9)
 
@@ -381,7 +384,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         :return: True 可以运行 or False
         """
         logger.hr(f'Check {self.climb_type} tickets')
-        if not self.wait_until_appear(self.O_FIRE, wait_time=3):
+        if not self.wait_until_appear(self.I_FIRE_BUTTON, wait_time=3):
             logger.warning(f'Detect fire fail, try reidentify')
             return False
         self.screenshot()
@@ -389,7 +392,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         if self.climb_type == 'pass':
             remain_times = self.O_REMAIN_PASS.ocr_digit(self.device.image)
         if self.climb_type == 'ap':
-            remain_times = self.O_REMAIN_AP.ocr_digit(self.device.image)
+            remain_times = self.O_REMAIN_AP.ocr_quantity(self.device.image)
         if self.climb_type == 'boss':
             _, remain_times, _ = self.O_REMAIN_BOSS.ocr_digit_counter(self.device.image)
         if self.climb_type == 'ap100':
@@ -435,5 +438,3 @@ if __name__ == '__main__':
     t = ScriptTask(c, d)
 
     t.run()
-
-

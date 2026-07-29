@@ -67,6 +67,26 @@ class BaseTask(GlobalGameAssets, CostumeBase):
         :return: 没有出现返回False, 其他True
         """
         image = self.device.image
+        # 活动碎片全屏覆盖
+        if self.appear(self.I_ACTIVITY_MATERIAL):
+            logger.info('Activity material appearing')
+            detect_record = self.device.detect_record
+            activity_timer = Timer(10).start()
+            while 1:
+                self.device.screenshot()
+                if not self.appear(self.I_ACTIVITY_MATERIAL):
+                    logger.info('Activity material disappeared')
+                    break
+                if activity_timer.reached():
+                    logger.warning('Activity material handle timeout')
+                    break
+                x = random.randint(200, 1080)
+                y = random.randint(100, 620)
+                self.device.click(x=x, y=y)
+                self.device.sleep(0.3)
+            self.device.detect_record = detect_record
+            return True
+
         appear_invitation = self.appear(self.I_G_ACCEPT)
         if not appear_invitation:
             return False

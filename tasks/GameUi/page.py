@@ -156,7 +156,8 @@ page_town.link(button=G.I_TOWN_GOTO_HYAKKIYAKOU, destination=page_hyakkiyakou)
 
 # ************************************* 庭院部分 *****************************************#
 # 式神录 shikigami_records
-page_shikigami_records = Page(G.I_CHECK_RECORDS)
+# 标题文字在所有式神录皮肤中保持一致，使用 OCR 作为页面标志。
+page_shikigami_records = Page(G.O_CHECK_RECORDS_TITLE)
 page_shikigami_records.additional = [G.I_AD_DISAPPEAR, G.I_RECORDS_CLOSE, GGA.I_UI_CANCEL_SAMLL]
 page_shikigami_records.link(button=G.I_BACK_Y, destination=page_main)
 page_main.link(button=G.I_MAIN_GOTO_SHIKIGAMI_RECORDS, destination=page_shikigami_records)

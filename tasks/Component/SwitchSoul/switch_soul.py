@@ -8,6 +8,7 @@ from module.atom.click import RuleClick
 from module.atom.long_click import RuleLongClick
 from module.atom.ocr import RuleOcr
 from module.base.timer import Timer
+from module.exception import GameStuckError
 from tasks.base_task import BaseTask
 from tasks.Component.GeneralInvite.assets import GeneralInviteAssets
 from tasks.Component.GeneralInvite.config_invite import InviteConfig, InviteNumber, FindMode
@@ -43,22 +44,84 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
         点击预设
         :return:
         """
+        timeout = Timer(30).start()
         while 1:
             self.screenshot()
-            if self.appear(self.I_SOU_SWITCH_1):
+            # “队伍预设”是进入成功后的固定状态，不依赖式神录皮肤颜色。
+            if self.ocr_appear(self.O_SS_TEAM_PRESET_TITLE):
                 break
-            if self.appear(self.I_SOU_SWITCH_2):
-                break
-            if self.appear(self.I_SOU_SWITCH_3):
-                break
-            if self.appear(self.I_SOU_SWITCH_4):
-                break
-            if self.appear(self.I_SOU_TEAM_PRESENT):
-                break
-            if self.appear(self.I_SOUL_PRESET):
-                self.click(self.I_SOUL_PRESET, interval=3)
+            # 只有识别到式神录及“预设”文字时才点击，点击位置来自 OCR 结果。
+            if self.ocr_appear(self.O_SS_RECORDS_TITLE):
+                if self.ocr_appear_click(self.O_SS_PRESET_BUTTON, interval=3):
+                    continue
+            if timeout.reached():
+                raise GameStuckError('进入队伍预设界面超时')
+            sleep(0.3)
+        logger.info('Entered team preset in switch soul')
+
+    def _switch_team(self, action: RuleClick, description: str,
+                     target_ocr: RuleOcr = None) -> bool:
+        """
+        根据当前界面状态完成一次御魂预设切换。
+
+        队伍预设界面出现时点击对应行；确认弹窗出现时点击“确定”；
+        确认弹窗消失且重新识别到队伍预设界面后视为成功。
+        """
+        timeout = Timer(20).start()
+        click_count = 0
+        confirm_seen = False
+        confirm_click_count = 0
+        confirm_clear_timer = None
+        click_wait = None
+
+        while 1:
+            self.screenshot()
+
+            if self.ocr_appear(self.O_SS_SWITCH_CONFIRM):
+                confirm_seen = True
+                confirm_clear_timer = None
+                if self.ocr_appear_click(self.O_SS_SWITCH_CONFIRM, interval=0.8):
+                    confirm_click_count += 1
+                    logger.info(f'Switch soul confirmation {confirm_click_count}: {description}')
+                # 弹窗动画期间背景中的“队伍预设”仍可被识别，必须等弹窗真正消失。
+                sleep(0.2)
                 continue
-        logger.info('Click preset in switch soul')
+
+            if self.ocr_appear(self.O_SS_TEAM_PRESET_TITLE):
+                if confirm_seen:
+                    # 阴阳师已装备的契灵会在第一次确认后继续弹出二次确认。
+                    # 两层弹窗之间会短暂露出预设页，稳定等待后再判定全部完成。
+                    if confirm_clear_timer is None:
+                        confirm_clear_timer = Timer(2).start()
+                    if confirm_clear_timer.reached():
+                        logger.info(f'Switch soul confirmed after {confirm_click_count} confirmation(s): {description}')
+                        return True
+                    sleep(0.2)
+                    continue
+                # 点击后等待弹窗出现。若连续三次点击都没有弹窗且页面未跳转，
+                # 游戏表示该套装已经装备，沿用旧逻辑按成功处理。
+                if click_wait is not None and not click_wait.reached():
+                    sleep(0.2)
+                    continue
+                if click_count >= 3:
+                    logger.info(f'Soul preset already equipped: {description}')
+                    return True
+                if click_count < 3:
+                    if target_ocr is None:
+                        self.click(action)
+                        clicked = True
+                    else:
+                        clicked = self.ocr_appear_click_by_rule(target_ocr, action)
+                    if clicked:
+                        click_count += 1
+                        click_wait = Timer(1.5).start()
+                        sleep(0.3)
+                        continue
+
+            if timeout.reached():
+                logger.warning(f'Switch soul timeout: {description}')
+                return False
+            sleep(0.3)
 
     def switch_soul_one(self, group: int, team: int) -> None:
         """
@@ -68,24 +131,24 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
         :return:
         """
 
-        def get_group_assets(group: int) -> tuple:
+        def get_group_asset(group: int) -> RuleClick:
             match = {
-                1: tuple([self.C_SOU_GROUP_1, self.I_SOU_CHECK_GROUP_1]),
-                2: tuple([self.C_SOU_GROUP_2, self.I_SOU_CHECK_GROUP_2]),
-                3: tuple([self.C_SOU_GROUP_3, self.I_SOU_CHECK_GROUP_3]),
-                4: tuple([self.C_SOU_GROUP_4, self.I_SOU_CHECK_GROUP_4]),
-                5: tuple([self.C_SOU_GROUP_5, self.I_SOU_CHECK_GROUP_5]),
-                6: tuple([self.C_SOU_GROUP_6, self.I_SOU_CHECK_GROUP_6]),
-                7: tuple([self.C_SOU_GROUP_7, self.I_SOU_CHECK_GROUP_7]),
+                1: self.C_SOU_GROUP_1,
+                2: self.C_SOU_GROUP_2,
+                3: self.C_SOU_GROUP_3,
+                4: self.C_SOU_GROUP_4,
+                5: self.C_SOU_GROUP_5,
+                6: self.C_SOU_GROUP_6,
+                7: self.C_SOU_GROUP_7,
             }
             return match[group]
 
-        def get_team_asset(team: int):
+        def get_team_asset(team: int) -> RuleClick:
             match = {
-                1: self.I_SOU_SWITCH_1,
-                2: self.I_SOU_SWITCH_2,
-                3: self.I_SOU_SWITCH_3,
-                4: self.I_SOU_SWITCH_4,
+                1: self.C_SOU_SWITCH_1,
+                2: self.C_SOU_SWITCH_2,
+                3: self.C_SOU_SWITCH_3,
+                4: self.C_SOU_SWITCH_4,
             }
             return match[team]
 
@@ -109,35 +172,15 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
         if team < 1 or team > 4:
             raise ValueError('Switch soul_one team must be in [1-4]')
         # 这一步是选择组
-        target_click, target_check = get_group_assets(group)
-        # while 1:
-        #     self.screenshot()
-        #     if self.click(target_click, interval=1):
-        #         continue
-        #     if self.appear(target_check):
-        #         break
+        target_click = get_group_asset(group)
         # 2023.8.5 修改为无反馈的点击切换
         for i in range(2):
             self.click(target_click)
             sleep(0.5)
-        # 点击队伍
+        # 四个操作按钮布局固定，颜色随皮肤变化，因此只使用按钮区域点击。
         target_team = get_team_asset(team)
-        for i in range(3):
-            sleep(0.8)
-            self.screenshot()
-            if self.appear(self.I_SOU_SWITCH_SURE):
-                while 1:
-                    self.click(self.I_SOU_SWITCH_SURE, 3)
-                    self.screenshot()
-                    if self.appear_then_click(self.I_CHECK_BLOCK, 3):
-                        continue
-                    if not self.appear(self.I_SOU_SWITCH_SURE):
-                        break
-                continue
-            if not self.appear_then_click(target_team, interval=3):
-                logger.warning(f'Click team {team} failed in group {group}')
-        # 兜底若还出现确认按钮则点击
-        self.ui_click_until_disappear(self.I_SOU_SWITCH_SURE)
+        if not self._switch_team(target_team, f'group {group} team {team}'):
+            raise GameStuckError(f'切换御魂失败：分组 {group}，队伍 {team}')
         logger.info(f'Switch soul_one group {group} team {team}')
 
     def switch_souls(self, target: tuple or list[tuple]) -> None:
@@ -160,9 +203,9 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
         """
         while 1:
             self.screenshot()
-            if not self.appear(self.I_SOU_CHECK_IN):
+            if not self.ocr_appear(self.O_SS_RECORDS_TITLE):
                 break
-            if self.appear_then_click(self.I_RECORD_SOUL_BACK, interval=3.5):
+            if self.click(self.C_SOU_RECORDS_BACK, interval=3.5):
                 continue
         logger.info('Exit shikigami records')
 
@@ -252,18 +295,12 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
             if self.ocr_appear_click(self.O_SS_TEAM_NAME):
                 break
         logger.info(f'Select team {teamName}')
-        # 切换御魂
-        cnt_click: int = 0
+        # 切换御魂。横坐标使用固定按钮区域，纵坐标跟随 OCR 到的队伍名称。
         self.O_SS_TEAM_NAME.keyword = teamName
-        while 1:
-            self.screenshot()
-            if cnt_click >= 4:
-                break
-            if self.appear_then_click(self.I_SOU_SWITCH_SURE, interval=0.8):
-                continue
-            if self.ocr_appear_click_by_rule(self.O_SS_TEAM_NAME, self.I_SOU_CLICK_PRESENT, interval=1.5):
-                cnt_click += 1
-                continue
+        if not self._switch_team(self.C_SOU_TEAM_SELECT,
+                                 f'group {groupName} team {teamName}',
+                                 target_ocr=self.O_SS_TEAM_NAME):
+            raise GameStuckError(f'切换御魂失败：分组 {groupName}，队伍 {teamName}')
         logger.info(f'Switch soul_one group {groupName} team {teamName}')
 
     def ocr_appear_click_by_rule(self,
@@ -285,9 +322,9 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
             return False
 
         x1, y1, w1, h1 = target.area
-        x, y = action.coord()
+        x, _ = action.coord()
 
-        self.device.click(x=x, y=y1, control_name=target.name)
+        self.device.click(x=x, y=int(y1 + h1 / 2), control_name=target.name)
         return True
 
 

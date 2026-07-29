@@ -161,18 +161,6 @@ class ScriptTask(GeneralBattle, GeneralInvite, GeneralBuff, GeneralRoom, GameUi,
             if self.appear_then_click(self.I_PET_PRESENT, action=self.C_WIN_3, interval=1):
                 continue
 
-            if self.current_count >= self.limit_count:
-                if self.is_in_room():
-                    logger.info('Orochi count limit out')
-                    break
-
-            if datetime.now() - self.start_time >= self.limit_time:
-                if self.is_in_room():
-                    logger.info('Orochi time limit out')
-                    break
-
-
-
             # 如果没有进入房间那就不需要后面的邀请
             if not self.is_in_room():
                 if self.is_room_dead():
@@ -180,6 +168,15 @@ class ScriptTask(GeneralBattle, GeneralInvite, GeneralBuff, GeneralRoom, GameUi,
                     success = False
                     break
                 continue
+
+            # 已经稳定回到房间，开始下一场挑战前检查运行限制
+            if self.current_count >= self.limit_count:
+                logger.info('Orochi count limit out')
+                break
+
+            if datetime.now() - self.start_time >= self.limit_time:
+                logger.info('Orochi time limit out')
+                break
 
             # 点击挑战
             if not is_first:
@@ -356,22 +353,21 @@ class ScriptTask(GeneralBattle, GeneralInvite, GeneralBuff, GeneralRoom, GameUi,
             if self.appear_then_click(self.I_PET_PRESENT, action=self.C_WIN_3, interval=1):
                 continue
 
-            if self.current_count >= self.limit_count:
-                if self.is_in_room():
-                    logger.info('Orochi count limit out')
-                    break
-
-            if datetime.now() - self.start_time >= self.limit_time:
-                if self.is_in_room():
-                    logger.info('Orochi time limit out')
-                    break
-
             if not self.is_in_room():
                 if self.is_room_dead():
                     logger.warning('Orochi task failed')
                     success = False
                     break
                 continue
+
+            # 已经稳定回到房间，开始下一场挑战前检查运行限制
+            if self.current_count >= self.limit_count:
+                logger.info('Orochi count limit out')
+                break
+
+            if datetime.now() - self.start_time >= self.limit_time:
+                logger.info('Orochi time limit out')
+                break
 
             # 点击挑战
             logger.info('Wait for starting')
@@ -506,7 +502,6 @@ if __name__ == '__main__':
     t = ScriptTask(c, d)
 
     t.run()
-
 
 
 

@@ -55,7 +55,7 @@ class ScriptTask(GameUi, SoulsTidyAssets):
         退回到式神录
         :return:
         """
-        self.ui_click(self.I_UI_BACK_YELLOW, self.I_CHECK_RECORDS)
+        self.ui_click(self.I_UI_BACK_YELLOW, self.O_CHECK_RECORDS_TITLE)
 
     def greed_maneki(self):
         """
@@ -194,4 +194,3 @@ if __name__ == '__main__':
 
     #t.greed_maneki()
     t.run()
-

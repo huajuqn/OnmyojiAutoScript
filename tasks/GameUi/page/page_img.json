@@ -29,7 +29,7 @@
   {
     "itemName": "check_exploration",
     "imageName": "page_check_exploration.png",
-    "roiFront": "681,12,27,36",
+    "roiFront": "696,14,16,34",
     "roiBack": "661,0,70,61",
     "method": "Template matching",
     "threshold": 0.65,

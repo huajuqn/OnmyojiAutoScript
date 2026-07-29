@@ -65,8 +65,8 @@
   {
     "itemName": "login_specific_serve",
     "imageName": "login_login_specific_serve.png",
-    "roiFront": "0,0,120,120",
-    "roiBack": "0,0,120,120",
+    "roiFront": "1121,53,52,51",
+    "roiBack": "1082,33,120,120",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "指定角色进入游戏,默认第一个"
@@ -160,5 +160,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "取消继续战斗"
+  },
+  {
+    "itemName": "user_center",
+    "imageName": "login_user_center.png",
+    "roiFront": "1123,59,48,40",
+    "roiBack": "1105,28,85,117",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "开屏登录用户中心"
   }
 ]

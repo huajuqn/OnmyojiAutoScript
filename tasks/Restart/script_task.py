@@ -37,7 +37,13 @@ class ScriptTask(LoginHandler):
     def app_restart(self):
         logger.hr('App restart')
         self.device.app_stop()
+        # 防御：关闭模拟器流氓广告 SDK（雷电/部分 ROM 检测到 ADB 操作后会自动拉起游戏中心）
+        self._stop_adware()
         self.device.app_start()
+        # 等待游戏加载，避免在模拟器桌面/过渡画面上进行图像匹配导致误点击底部推荐栏
+        self.device.sleep(3)
+        # 游戏启动后再次清理，防止模拟器检测到游戏启动后再次拉起广告 SDK
+        self._stop_adware()
         self.app_handle_login()
 
         # self.config.task_delay(server_update=True)
@@ -54,6 +60,18 @@ class ScriptTask(LoginHandler):
             # 如果时间在20:00-23:59之间则设定时间为次日 12 时
             else:
                 self.custom_next_run(task='Restart', custom_time=Time(12, 0), time_delta=1)
+
+    def _stop_adware(self):
+        """强制关闭已知模拟器流氓广告/游戏中心应用"""
+        adware = [
+            'com.android.flysilkworm',  # 雷电/部分 ROM 的游戏中心/广告 SDK
+        ]
+        for pkg in adware:
+            try:
+                self.device.adb_shell(['am', 'force-stop', pkg])
+                logger.info(f'Force stop adware: {pkg}')
+            except Exception:
+                pass
 
     def delay_pending_tasks(self) -> bool:
         """
@@ -83,12 +101,3 @@ if __name__ == '__main__':
     task.app_restart()
     # task.config.update_scheduler()
     # task.delay_pending_tasks()
-
-
-
-
-
-
-
-
-

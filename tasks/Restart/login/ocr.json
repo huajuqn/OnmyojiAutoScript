@@ -34,5 +34,14 @@
     "method": "Default",
     "keyword": "",
     "description": "登录指定角色，默认第一个"
+  },
+  {
+    "itemName": "load_note",
+    "roiFront": "449,636,377,45",
+    "roiBack": "416,626,428,66",
+    "mode": "Single",
+    "method": "Default",
+    "keyword": "",
+    "description": "加载视频或链接服务器提示"
   }
 ]

@@ -54,9 +54,9 @@ class GeneralInviteAssets:
 	# description 
 	I_FLAG_1_OFF = RuleImage(roi_front=(353,126,58,22), roi_back=(353,126,58,22), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_1_off.png")
 	# description 
-	I_FLAG_2_ON = RuleImage(roi_front=(472,82,32,11), roi_back=(454,74,56,26), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_2_on.png")
+	I_FLAG_2_ON = RuleImage(roi_front=(469,127,58,21), roi_back=(463,121,70,33), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_2_on.png")
 	# description 
-	I_FLAG_2_OFF = RuleImage(roi_front=(469,127,58,21), roi_back=(469,127,58,21), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_2_off.png")
+	I_FLAG_2_OFF = RuleImage(roi_front=(469,127,58,21), roi_back=(463,121,70,33), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_2_off.png")
 	# description 
 	I_FLAG_3_ON = RuleImage(roi_front=(588,126,48,22), roi_back=(588,126,48,22), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_flag_3_on.png")
 	# description 
@@ -127,4 +127,5 @@ class GeneralInviteAssets:
 	O_FRIEND_NAME_2 = RuleOcr(roi=(729,184,196,346), area=(729,184,196,346), mode="Full", method="Default", keyword="", name="friend_name_2")
 	# Ocr-description 
 	O_ONLINE = RuleOcr(roi=(790,102,124,42), area=(0,0,100,100), mode="Single", method="Default", keyword="", name="online")
+
 

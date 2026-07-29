@@ -579,7 +579,7 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         """
         while 1:
             self.screenshot()
-            if self.appear(self.I_CHECK_RECORDS):
+            if self.appear(self.O_CHECK_RECORDS_TITLE):
                 break
             if self.appear_then_click(self.I_BF_RECORDS, interval=1):
                 continue

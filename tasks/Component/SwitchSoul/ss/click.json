@@ -47,5 +47,35 @@
     "roiFront": "977,157,21,21",
     "roiBack": "977,157,21,21",
     "description": "阵容选择按钮位置"
+  },
+  {
+    "itemName": "sou_switch_1",
+    "roiFront": "978,142,30,30",
+    "roiBack": "978,142,30,30",
+    "description": "第一行队伍更换御魂按钮区域"
+  },
+  {
+    "itemName": "sou_switch_2",
+    "roiFront": "978,294,30,30",
+    "roiBack": "978,294,30,30",
+    "description": "第二行队伍更换御魂按钮区域"
+  },
+  {
+    "itemName": "sou_switch_3",
+    "roiFront": "978,447,30,30",
+    "roiBack": "978,447,30,30",
+    "description": "第三行队伍更换御魂按钮区域"
+  },
+  {
+    "itemName": "sou_switch_4",
+    "roiFront": "978,598,30,30",
+    "roiBack": "978,598,30,30",
+    "description": "第四行队伍更换御魂按钮区域"
+  },
+  {
+    "itemName": "sou_records_back",
+    "roiFront": "18,8,52,45",
+    "roiBack": "18,8,52,45",
+    "description": "式神录返回按钮区域"
   }
 ]

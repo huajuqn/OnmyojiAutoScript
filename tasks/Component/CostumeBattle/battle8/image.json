@@ -38,8 +38,8 @@
   {
     "itemName": "de_win_8",
     "imageName": "battle8_de_win_8.png",
-    "roiFront": "392,99,100,100",
-    "roiBack": "239,36,399,198",
+    "roiFront": "566,59,100,100",
+    "roiBack": "409,7,399,198",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "针对封魔的特殊"
@@ -47,8 +47,8 @@
   {
     "itemName": "false_8",
     "imageName": "battle8_false_8.png",
-    "roiFront": "384,106,100,100",
-    "roiBack": "346,96,184,120",
+    "roiFront": "546,146,100,100",
+    "roiBack": "346,96,373,207",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "失败"

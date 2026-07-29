@@ -68,7 +68,13 @@ class PaintImage(QQuickPaintedItem):
         if not isinstance(file, str):
             logger.error("file must be str")
             return
+        import os
+        if file.endswith('/') or file.endswith('\\') or os.path.isdir(file):
+            logger.error(f"save target image failed, file path is a directory: {file}")
+            return
         x, y, width, height = map(int, roi.split(','))
         roi_image = self._image.copy(x, y, width, height)
-        roi_image.save(file)
-        logger.info(f"save target image {file}success")
+        if roi_image.save(file):
+            logger.info(f"save target image {file} success")
+        else:
+            logger.error(f"save target image {file} failed")

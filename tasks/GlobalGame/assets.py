@@ -31,6 +31,8 @@ class GlobalGameAssets:
 	I_CLIENT_CLEAR = RuleImage(roi_front=(578,369,151,72), roi_back=(578,369,151,72), threshold=0.8, method="Template matching", file="./tasks/GlobalGame/gg/gg_client_clear.png")
 	# description 
 	I_CHAT_CLOSE_BUTTON = RuleImage(roi_front=(632,343,49,103), roi_back=(632,343,49,103), threshold=0.8, method="Template matching", file="./tasks/GlobalGame/gg/gg_chat_close_button.png")
+	# description 
+	I_ACTIVITY_MATERIAL = RuleImage(roi_front=(607,243,62,62), roi_back=(595,236,88,82), threshold=0.8, method="Template matching", file="./tasks/GlobalGame/gg/gg_activity_material.png")
 
 
 	# Click Rule Assets

@@ -286,10 +286,13 @@ class GameUi(BaseTask, GameUiAssets):
                 if timeout_timer.reached():
                     return False
                 if isinstance(button, list):
-                    exec_operates = [self.appear_then_operate(btn, interval=0.8, skip_first_screenshot=False)
-                                     for btn in button]
-                    if exec_operates[0]:  # 只要第一个成功就跳出
+                    # 第一个通常是目标入口，后续按钮只用于翻动/展开入口列表。
+                    # 目标入口点击成功后必须短路，避免在页面切换动画期间继续误点备用按钮。
+                    if self.appear_then_operate(button[0], interval=0.8, skip_first_screenshot=False):
                         break
+                    for btn in button[1:]:
+                        self.appear_then_operate(btn, interval=0.8, skip_first_screenshot=False)
+                    continue
                 if self.appear_then_operate(button, interval=0.8, skip_first_screenshot=False):
                     break
             else:

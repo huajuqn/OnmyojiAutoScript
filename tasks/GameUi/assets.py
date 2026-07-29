@@ -49,7 +49,7 @@ class GameUiAssets:
 	# description 
 	I_MAIN_GOTO_EXPLORATION = RuleImage(roi_front=(493,116,45,75), roi_back=(243,100,933,211), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_main_goto_exploration.png")
 	# description 
-	I_CHECK_EXPLORATION = RuleImage(roi_front=(681,12,27,36), roi_back=(661,0,70,61), threshold=0.65, method="Template matching", file="./tasks/GameUi/page/page_check_exploration.png")
+	I_CHECK_EXPLORATION = RuleImage(roi_front=(696,14,16,34), roi_back=(661,0,70,61), threshold=0.65, method="Template matching", file="./tasks/GameUi/page/page_check_exploration.png")
 	# 探索前往觉醒 
 	I_EXPLORATION_GOTO_AWAKE_ZONE = RuleImage(roi_front=(65,632,50,41), roi_back=(33,619,1125,98), threshold=0.65, method="Template matching", file="./tasks/GameUi/page/page_exploration_goto_awake_zone.png")
 	# 探索前往御魂 
@@ -221,7 +221,7 @@ class GameUiAssets:
 	# 英杰试炼左上角标志 
 	I_CHECK_HERO_TEST = RuleImage(roi_front=(148,10,133,48), roi_back=(137,0,157,71), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_check_hero_test.png")
 	# 探索前往英杰试炼 
-	I_EXPLORATION_GOTO_HERO_TEST = RuleImage(roi_front=(838,635,38,43), roi_back=(7,605,1272,113), threshold=0.65, method="Template matching", file="./tasks/GameUi/page/page_exploration_goto_hero_test.png")
+	I_EXPLORATION_GOTO_HERO_TEST = RuleImage(roi_front=(828,634,58,56), roi_back=(7,605,1272,113), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_exploration_goto_hero_test.png")
 
 
 	# Image Rule Assets
@@ -246,6 +246,8 @@ class GameUiAssets:
 	O_BATTLE_AUTO = RuleOcr(roi=(37,642,51,36), area=(0,589,133,128), mode="Single", method="Default", keyword="自动", name="battle_auto")
 	# 战斗页面手动标志 
 	O_BATTLE_HAND = RuleOcr(roi=(35,644,52,34), area=(0,589,136,129), mode="Single", method="Default", keyword="手动", name="battle_hand")
+	# 式神录页面固定文字标志，不受式神录皮肤影响 
+	O_CHECK_RECORDS_TITLE = RuleOcr(roi=(70,0,170,62), area=(70,0,170,62), mode="Full", method="Default", keyword="式神录", name="check_records_title")
 
 
 	# Image Rule Assets

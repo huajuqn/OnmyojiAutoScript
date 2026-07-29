@@ -1,5 +1,14 @@
 [
   {
+    "itemName": "fire_button",
+    "imageName": "fire_fire_button.png",
+    "roiFront": "1136,596,90,62",
+    "roiBack": "1095,570,175,135",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "战斗页挑战按钮"
+  },
+  {
     "itemName": "pass_1",
     "imageName": "fire_pass_1.png",
     "roiFront": "359,295,100,53",

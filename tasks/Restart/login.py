@@ -9,7 +9,6 @@ from tasks.Restart.assets import RestartAssets
 from tasks.GameUi.assets import GameUiAssets
 from tasks.Component.GeneralBuff.assets import GeneralBuffAssets
 from tasks.base_task import BaseTask
-import time
 
 class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
     character: str
@@ -31,6 +30,10 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
         confirm_timer = Timer(1.5, count=2).start()
         orientation_timer = Timer(10)
         login_success = False
+        startup_state = 'wait_user_center'
+        startup_wait_timer = Timer(10).start()
+        user_center_disappear_timer = Timer(5)
+        video_click_timer = Timer(0).start()
 
         while 1:
             # Watch device rotation
@@ -39,7 +42,27 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
                 self.device.get_orientation()
                 orientation_timer.reset()
 
+            # 点击会清空卡死检测记录，登录阶段需要始终使用长等待阈值。
+            if 'LOGIN_CHECK' not in self.device.detect_record:
+                self.device.stuck_record_add('LOGIN_CHECK')
             self.screenshot()
+
+            # 开屏加载界面存在用户中心图标；图标消失后进入视频跳过状态。
+            if self.appear(self.I_USER_CENTER):
+                if startup_state != 'wait_user_center_disappear':
+                    logger.info('User center detected, wait until it disappears')
+                startup_state = 'wait_user_center_disappear'
+                user_center_disappear_timer.clear()
+                continue
+            if startup_state == 'wait_user_center_disappear':
+                if not user_center_disappear_timer.started():
+                    user_center_disappear_timer.start()
+                if not user_center_disappear_timer.reached():
+                    continue
+                logger.info('User center disappeared, enter video skip stage')
+                startup_state = 'video'
+                video_click_timer.reset()
+
             # 取消继续战斗
             if self.appear_then_click(self.I_CANCEL_BATTLE, interval=0.8):
                 logger.info('Cancel continue battle')
@@ -103,17 +126,18 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
                 logger.info("click onmyoji genie")
                 continue
             # 点击屏幕进入游戏
-            if self.appear(self.I_LOGIN_SPECIFIC_SERVE, interval=0.6) \
-                    and self.ocr_appear_click(self.O_LOGIN_SPECIFIC_SERVE, interval=0.6):
-                while True:
-                    self.screenshot()
-                    if self.appear(self.I_LOGIN_SPECIFIC_SERVE):
-                        self.click(self.C_LOGIN_ENSURE_LOGIN_CHARACTER_IN_SAME_SVR, interval=2)
-                        continue
-                    break
-                logger.info('login specific user')
+            if self.appear(self.I_LOGIN_SPECIFIC_SERVE, interval=0.6):
+                startup_state = 'login'
+                if self.ocr_appear_click(self.O_LOGIN_SPECIFIC_SERVE, interval=0.6):
+                    while True:
+                        self.screenshot()
+                        if self.appear(self.I_LOGIN_SPECIFIC_SERVE):
+                            self.click(self.C_LOGIN_ENSURE_LOGIN_CHARACTER_IN_SAME_SVR, interval=2)
+                            continue
+                        break
+                    logger.info('login specific user')
                 continue
-            
+
             # 创建角色, 误入新区直接重启
             if self.appear(self.I_CREATE_ACCOUNT):
                 logger.warning('Appear create account')
@@ -125,19 +149,33 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
                 logger.info('误入区服设置')
                 # https://github.com/runhey/OnmyojiAutoScript/issues/585
                 self.device.click(x=106, y=535)
-                
-            # 点击’进入游戏‘
-            if not self.appear(self.I_LOGIN_8):
                 continue
-            
-            # 登录体验服时，点击“进入游戏”速度过快，可能会出现体验服的弹窗
-            if self.appear(self.I_EARLY_SERVER):
-                if self.appear_then_click(self.I_EARLY_SERVER_CANCEL):
-                    logger.info('Cancel switch from early server to normal server')
-                    continue
-            if self.ocr_appear_click(self.O_LOGIN_ENTER_GAME, interval=3):
-                self.wait_until_appear(self.I_LOGIN_SPECIFIC_SERVE, True, wait_time=5)
+
+            # 登录界面出现后结束视频状态，只在精确识别到“进入游戏”时点击。
+            if self.appear(self.I_LOGIN_8):
+                startup_state = 'login'
+                # 登录体验服时，点击“进入游戏”速度过快可能出现体验服弹窗。
+                if self.appear(self.I_EARLY_SERVER):
+                    if self.appear_then_click(self.I_EARLY_SERVER_CANCEL):
+                        logger.info('Cancel switch from early server to normal server')
+                        continue
+                if self.ocr_appear_click(self.O_LOGIN_ENTER_GAME, interval=3):
+                    self.wait_until_appear(self.I_LOGIN_SPECIFIC_SERVE, True, wait_time=5)
                 continue
+
+            # 冷启动时可能错过用户中心图标，未知开屏持续 10 秒后按视频界面处理。
+            if startup_state == 'wait_user_center' and startup_wait_timer.reached():
+                logger.info('User center not detected for 10s, enter video skip stage directly')
+                startup_state = 'video'
+                video_click_timer.reset()
+
+            # 视频画面没有稳定元素可识别，随机间隔点击，直到登录界面条件出现。
+            if startup_state == 'video' and video_click_timer.reached():
+                x = random.randint(400, 880)
+                y = random.randint(200, 520)
+                self.device.click(x=x, y=y, control_name=f'VIDEO_SKIP_{x}_{y}')
+                logger.info(f'Video skip click ({x}, {y})')
+                video_click_timer = Timer(random.uniform(1, 5)).start()
 
         return login_success
 

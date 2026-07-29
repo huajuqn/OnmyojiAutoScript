@@ -27,6 +27,16 @@ class SwitchSoulAssets:
 	C_SOU_GROUP_7 = RuleClick(roi_front=(1090,505,156,51), roi_back=(1090,505,156,51), name="sou_group_7")
 	# 阵容选择按钮位置 
 	C_SOU_TEAM_SELECT = RuleClick(roi_front=(977,157,21,21), roi_back=(977,157,21,21), name="sou_team_select")
+	# 第一行队伍更换御魂按钮区域 
+	C_SOU_SWITCH_1 = RuleClick(roi_front=(978,142,30,30), roi_back=(978,142,30,30), name="sou_switch_1")
+	# 第二行队伍更换御魂按钮区域 
+	C_SOU_SWITCH_2 = RuleClick(roi_front=(978,294,30,30), roi_back=(978,294,30,30), name="sou_switch_2")
+	# 第三行队伍更换御魂按钮区域 
+	C_SOU_SWITCH_3 = RuleClick(roi_front=(978,447,30,30), roi_back=(978,447,30,30), name="sou_switch_3")
+	# 第四行队伍更换御魂按钮区域 
+	C_SOU_SWITCH_4 = RuleClick(roi_front=(978,598,30,30), roi_back=(978,598,30,30), name="sou_switch_4")
+	# 式神录返回按钮区域 
+	C_SOU_RECORDS_BACK = RuleClick(roi_front=(18,8,52,45), roi_back=(18,8,52,45), name="sou_records_back")
 
 
 	# Image Rule Assets
@@ -73,6 +83,14 @@ class SwitchSoulAssets:
 	O_SS_GROUP_NAME = RuleOcr(roi=(1087,91,155,566), area=(1110,94,116,533), mode="Full", method="Default", keyword="", name="ss_group_name")
 	# 阵容匹配 
 	O_SS_TEAM_NAME = RuleOcr(roi=(573,140,277,481), area=(667,144,32,475), mode="Full", method="Default", keyword="", name="ss_team_name")
+	# 式神录页面固定文字标志 
+	O_SS_RECORDS_TITLE = RuleOcr(roi=(70,0,170,62), area=(70,0,170,62), mode="Full", method="Default", keyword="式神录", name="ss_records_title")
+	# 式神录预设按钮固定文字 
+	O_SS_PRESET_BUTTON = RuleOcr(roi=(315,55,130,80), area=(315,55,130,80), mode="Full", method="Default", keyword="预设", name="ss_preset_button")
+	# 队伍预设界面固定文字标志 
+	O_SS_TEAM_PRESET_TITLE = RuleOcr(roi=(660,48,250,85), area=(660,48,250,85), mode="Full", method="Default", keyword="队伍预设", name="ss_team_preset_title")
+	# 更换预设御魂确认按钮固定文字 
+	O_SS_SWITCH_CONFIRM = RuleOcr(roi=(650,385,220,100), area=(650,385,220,100), mode="Full", method="Default", keyword="确定", name="ss_switch_confirm")
 
 
 	# Swipe Rule Assets
