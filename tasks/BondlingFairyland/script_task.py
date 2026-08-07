@@ -4,7 +4,6 @@
 
 from time import sleep
 
-import random
 from cached_property import cached_property
 from datetime import datetime
 from datetime import timedelta, time
@@ -288,7 +287,7 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                     if self.run_stone(bondling_config.bondling_stone_enable):
                         continue
                     elif bondling_config.bondling_search_enable and bondling_config.user_status == UserStatus.ALONE:
-                        if self.run_search(bondling_config, limit_cnt=random.randint(5, 20)):
+                        if self.run_search(bondling_config, target_index=current_ball_index):
                             logger.info('Bondling search finish, try to run catch')
                             continue
                         else:
@@ -358,20 +357,26 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
             if self.appear_then_click(self.I_STONE_SURE, interval=1):
                 continue
 
-    def run_search(self, bondling_config: BondlingConfig, limit_cnt: int = None):
+    def run_search(self, bondling_config: BondlingConfig, target_index: int = None, limit_cnt: int = None):
         """
         运行探查
+        :param target_index: 目标契灵序号，设置后每次探查都会检查对应固定位置是否已刷出
+        :param limit_cnt: 最多探查次数
         :return:
         (1) 超出战斗的次数的了，(探查页面)返回False
         (2) 超过时间限制了，(探查页面)返回False
-        (3) 打满五只球了，(探查界面)返回True
-        (4) 打满对应limit_cnt次, (探查界面)返回True
+        (3) 目标契灵已刷出，(探查界面)返回True
+        (4) 达到limit_cnt次或四个位置已满, (探查界面)返回True
         """
         self.lock_team()
         while 1:
             # 检查是不是在探查界面，
             if not self.in_search_ui(screenshot=True):
                 continue
+            # 新版契灵为固定四个位置，下方加号消失表示目标契灵已刷出
+            if target_index is not None and self.bondling_appeared(target_index):
+                logger.info(f'Target bondling appeared, index: {target_index}')
+                return True
             # 检查是否打满limit_cnt次
             if limit_cnt is not None and limit_cnt <= 0:
                 return True
@@ -389,7 +394,7 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                     limit_cnt = limit_cnt - 1
                     logger.info(f'Remain search battle: {limit_cnt}')
             else:
-                logger.warning(f'Full five ball')
+                logger.warning(f'Full four bondling positions')
                 return True
 
     def run_catch(self, bondling_config: BondlingConfig, battle_config: BattleConfig):
@@ -482,30 +487,79 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 return True
         return False
 
+    def get_bondling_click_target(self, index: int):
+        """获取契灵固定位置的点击区域。"""
+        if not 1 <= index <= 8:
+            raise ValueError(f'Bondling index must be between 1 and 8, current: {index}')
+        targets = {
+            1: self.C_STONE_1,
+            2: self.C_STONE_2,
+            3: self.C_STONE_3,
+            4: self.C_STONE_4,
+        }
+        return targets[(index - 1) % 4 + 1]
+
+    def get_bondling_plus_target(self, index: int):
+        """获取契灵固定位置下方的加号识别资源。"""
+        targets = {
+            1: self.I_BF_AREA1_ITEM_1,
+            2: self.I_BF_AREA1_ITEM_2,
+            3: self.I_BF_AREA1_ITEM_3,
+            4: self.I_BF_AREA1_ITEM_4,
+            5: self.I_BF_AREA2_ITEM_1,
+            6: self.I_BF_AREA2_ITEM_2,
+            7: self.I_BF_AREA2_ITEM_3,
+            8: self.I_BF_AREA2_ITEM_4,
+        }
+        try:
+            return targets[index]
+        except KeyError as exc:
+            raise ValueError(f'Bondling index must be between 1 and 8, current: {index}') from exc
+
+    def bondling_appeared(self, index: int, check_count: int = 3, check_interval: float = 0.3) -> bool:
+        """
+        多帧检查契灵位置下方的加号。
+        任意一帧出现加号都表示未刷出，只有连续多帧都没有加号才判定已刷出。
+        """
+        if check_count < 1:
+            raise ValueError(f'check_count must be greater than 0, current: {check_count}')
+        plus_target = self.get_bondling_plus_target(index)
+        for current in range(check_count):
+            if self.appear(plus_target):
+                return False
+            if current < check_count - 1:
+                sleep(check_interval)
+                self.screenshot()
+        return True
+
     def ball_click(self, index: int) -> bool:
         """
-        点击球, 进去结契战斗的界面
+        点击对应契灵，进入结契战斗界面。
+        如果下方加号存在，会点击原区域打开购买页面并返回False。
         :param index:
         :return:
         """
-        def get_click_target(ind: int):
-            """获取对应契灵点击位置"""
-            match = {
-                1: self.C_STONE_1,
-                2: self.C_STONE_2,
-                3: self.C_STONE_3,
-                4: self.C_STONE_4,
-                5: self.C_STONE_5,
-            }
-            return match[(ind - 1) % 4 + 1]
-
-        click_target = get_click_target(index)
+        click_target = self.get_bondling_click_target(index)
         click_count = 0
         logger.info(f'Click ball index: {index}')
         while 1:
             self.screenshot()
             if self.appear(self.I_BALL_HELP):
                 return True
+            # 加号因动画未命中时可能误判为已刷出；点击后出现购买页则立即纠正
+            if self.appear(self.I_STONE_SURE) or self.appear(self.I_STONE_CLOSE):
+                logger.info(f'Purchase UI appeared, bondling has not appeared, index: {index}')
+                return False
+            if not self.bondling_appeared(index):
+                logger.info(f'Bondling has not appeared, click purchase entrance, index: {index}')
+                self.click(click_target)
+                # 保留弹窗截图给run_stone判断是否进入购买页面
+                purchase_timer = Timer(3).start()
+                while not purchase_timer.reached():
+                    self.screenshot()
+                    if self.appear(self.I_STONE_SURE) or self.appear(self.I_STONE_CLOSE):
+                        break
+                return False
             if click_count >= 3:
                 return False
             # 点击
@@ -722,7 +776,7 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
     def click_search(self) -> bool:
         """
         点击探查
-        :return: 如果五个球满了 就返回False。如果进入战斗不出现点击按钮那就是返回True
+        :return: 如果四个位置满了就返回False。如果进入战斗不出现点击按钮则返回True
         """
         count = 0
         while 1:

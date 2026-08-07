@@ -45,48 +45,75 @@
     "description": "点击式神录"
   },
   {
-    "itemName": "bf_local_1_azure_basan",
-    "imageName": "bf_bf_local_1_azure_basan.png",
-    "roiFront": "237,536,28,25",
-    "roiBack": "225,523,53,50",
-    "method": "Template matching",
-    "threshold": 0.8,
-    "description": "左边第一个球：截屏的时候是火灵"
-  },
-  {
-    "itemName": "bf_local_2_snowball",
-    "imageName": "bf_bf_local_2_snowball.png",
-    "roiFront": "418,490,24,25",
-    "roiBack": "406,475,53,50",
-    "method": "Template matching",
-    "threshold": 0.8,
-    "description": "第二个，茨球"
-  },
-  {
-    "itemName": "bf_local_3_little_kuro",
-    "imageName": "bf_bf_local_3_little_kuro.png",
-    "roiFront": "704,509,29,26",
-    "roiBack": "690,492,62,58",
-    "method": "Template matching",
-    "threshold": 0.8,
-    "description": "截图时是小黑"
-  },
-  {
-    "itemName": "bf_local_4_none",
-    "imageName": "bf_bf_local_4_none.png",
-    "roiFront": "911,488,26,25",
-    "roiBack": "899,468,53,56",
-    "method": "Template matching",
-    "threshold": 0.8,
-    "description": "description"
-  },
-  {
-    "itemName": "bf_local_5_tomb_guard",
-    "imageName": "bf_bf_local_5_tomb_guard.png",
-    "roiFront": "1039,487,31,31",
-    "roiBack": "1026,481,56,51",
+    "itemName": "bf_area1_item_1",
+    "imageName": "bf_area1_item_1.png",
+    "roiFront": "228,537,29,25",
+    "roiBack": "216,524,53,50",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "镇墓兽"
+  },
+  {
+    "itemName": "bf_area1_item_2",
+    "imageName": "bf_area1_item_2.png",
+    "roiFront": "439,566,24,25",
+    "roiBack": "428,553,53,50",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "火灵"
+  },
+  {
+    "itemName": "bf_area1_item_3",
+    "imageName": "bf_area1_item_3.png",
+    "roiFront": "687,534,29,26",
+    "roiBack": "671,517,62,58",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "茨球"
+  },
+  {
+    "itemName": "bf_area1_item_4",
+    "imageName": "bf_area1_item_4.png",
+    "roiFront": "942,525,26,25",
+    "roiBack": "924,500,53,56",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "小黑"
+  },
+  {
+    "itemName": "bf_area2_item_1",
+    "imageName": "bf_area2_item_1.png",
+    "roiFront": "227,534,31,31",
+    "roiBack": "214,527,56,51",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "针女"
+  },
+  {
+    "itemName": "bf_area2_item_2",
+    "imageName": "bf_area2_item_2.png",
+    "roiFront": "439,566,26,28",
+    "roiBack": "427,534,53,68",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "薙魂"
+  },
+  {
+    "itemName": "bf_area2_item_3",
+    "imageName": "bf_area2_item_3.png",
+    "roiFront": "688,536,27,25",
+    "roiBack": "662,522,81,67",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "月魔兔"
+  },
+  {
+    "itemName": "bf_area2_item_4",
+    "imageName": "bf_area2_item_4.png",
+    "roiFront": "942,526,26,26",
+    "roiBack": "926,509,47,49",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "狐火"
   }
 ]
