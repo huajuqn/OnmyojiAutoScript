@@ -143,6 +143,8 @@ class RestartAssets:
 	O_LOGIN_ENTER_GAME = RuleOcr(roi=(550,567,176,56), area=(558,574,154,49), mode="Single", method="Default", keyword="进入游戏", name="login_enter_game")
 	# 点击屏幕跳过 
 	O_LOGIN_SKIP_1 = RuleOcr(roi=(1046,35,130,37), area=(1046,35,130,37), mode="Single", method="Default", keyword="点击屏幕跳过", name="login_skip_1")
+	# 登录CG视频右上角跳过按钮 
+	O_LOGIN_VIDEO_SKIP = RuleOcr(roi=(1120,30,110,50), area=(1120,30,110,50), mode="Single", method="Default", keyword="跳过", name="login_video_skip")
 	# 登录指定角色，默认第一个 
 	O_LOGIN_SPECIFIC_SERVE = RuleOcr(roi=(110,120,350,600), area=(110,120,350,600), mode="Full", method="Default", keyword="", name="login_specific_serve")
 	# 加载视频或链接服务器提示 

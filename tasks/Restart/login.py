@@ -1,7 +1,6 @@
 # This Python file uses the following encoding: utf-8
 # @author runhey
 # github https://github.com/runhey
-import random
 from module.base.timer import Timer
 from module.exception import RequestHumanTakeover, GameTooManyClickError, GameStuckError
 from module.logger import logger
@@ -12,12 +11,24 @@ from tasks.base_task import BaseTask
 
 class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
     character: str
+    VIDEO_SKIP_OCR_ALIASES = {'跳过', '跳過', '泐徹', '泐彻', '繚徹', '缭彻'}
 
     def __init__(self, *wargs, **kwargs):
         super().__init__(*wargs, **kwargs)
         self.character = self.config.restart.login_character_config.character
         self.O_LOGIN_SPECIFIC_SERVE.keyword = self.character
         # self.specific_usr = kwargs['config'].
+
+    def ocr_appear_then_click_video_skip(self) -> bool:
+        """识别并点击登录CG右上角的“跳过”按钮。"""
+        result = self.O_LOGIN_VIDEO_SKIP.ocr(self.device.image)
+        result = result.strip().replace(' ', '') if isinstance(result, str) else ''
+        if result not in self.VIDEO_SKIP_OCR_ALIASES:
+            return False
+        # 跳过按钮在转场前会短暂保留，限制点击间隔避免触发防连点。
+        if self.click(self.O_LOGIN_VIDEO_SKIP, interval=3):
+            logger.info(f'Click video skip, OCR result: {result}')
+        return True
 
     def _app_handle_login(self) -> bool:
         """
@@ -33,7 +44,8 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
         startup_state = 'wait_user_center'
         startup_wait_timer = Timer(10).start()
         user_center_disappear_timer = Timer(5)
-        video_click_timer = Timer(0).start()
+        video_ocr_timer = Timer(0).start()
+        video_reveal_timer = Timer(0).start()
 
         while 1:
             # Watch device rotation
@@ -61,7 +73,8 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
                     continue
                 logger.info('User center disappeared, enter video skip stage')
                 startup_state = 'video'
-                video_click_timer.reset()
+                video_ocr_timer.reset()
+                video_reveal_timer.reset()
 
             # 取消继续战斗
             if self.appear_then_click(self.I_CANCEL_BATTLE, interval=0.8):
@@ -167,15 +180,20 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
             if startup_state == 'wait_user_center' and startup_wait_timer.reached():
                 logger.info('User center not detected for 10s, enter video skip stage directly')
                 startup_state = 'video'
-                video_click_timer.reset()
+                video_ocr_timer.reset()
+                video_reveal_timer.reset()
 
-            # 视频画面没有稳定元素可识别，随机间隔点击，直到登录界面条件出现。
-            if startup_state == 'video' and video_click_timer.reached():
-                x = random.randint(400, 880)
-                y = random.randint(200, 520)
-                self.device.click(x=x, y=y, control_name=f'VIDEO_SKIP_{x}_{y}')
-                logger.info(f'Video skip click ({x}, {y})')
-                video_click_timer = Timer(random.uniform(1, 5)).start()
+            # 新版登录CG需要先点击画面显示“跳过”，再通过OCR识别并点击按钮。
+            if startup_state == 'video':
+                if video_ocr_timer.reached():
+                    video_ocr_timer = Timer(0.5).start()
+                    if self.ocr_appear_then_click_video_skip():
+                        video_reveal_timer.reset()
+                        continue
+                if video_reveal_timer.reached():
+                    self.device.click(x=640, y=360, control_name='VIDEO_SHOW_SKIP')
+                    logger.info('Click video to reveal skip button')
+                    video_reveal_timer = Timer(2).start()
 
         return login_success
 
