@@ -79,7 +79,7 @@ class BondlingFairylandAssets:
 	# description 
 	I_BF_STORE = RuleImage(roi_front=(261,632,57,57), roi_back=(261,632,57,57), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/bf/bf_bf_store.png")
 	# 点击式神录 
-	I_BF_RECORDS = RuleImage(roi_front=(1028,566,43,42), roi_back=(1028,566,43,42), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/bf/bf_bf_records.png")
+	I_BF_RECORDS = RuleImage(roi_front=(1040,567,31,34), roi_back=(1034,563,43,42), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/bf/bf_bf_records.png")
 	# 镇墓兽 
 	I_BF_AREA1_ITEM_1 = RuleImage(roi_front=(228,537,29,25), roi_back=(216,524,53,50), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/bf/bf_area1_item_1.png")
 	# 火灵 
