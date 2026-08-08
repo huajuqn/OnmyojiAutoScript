@@ -1,7 +1,7 @@
 # This Python file uses the following encoding: utf-8
 # @author runhey
 # github https://github.com/runhey
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from enum import Enum
 from datetime import datetime, time
 
@@ -16,7 +16,6 @@ class BondlingMode(str, Enum):
     MODE2 = '只刷契灵(低级式盘)'
     MODE3 = '只刷契灵(中级式盘)'
     MODE4 = '只刷契灵(高级式盘)'
-    MODE5 = '探查加契灵刷取(低级式盘)'
 
 
 class BondlingClass(str, Enum):
@@ -56,21 +55,32 @@ class BondlingConfig(ConfigBase):
     # 身份
     user_status: UserStatus = Field(default=UserStatus.ALONE, description='user_status_help')
     bondling_mode: BondlingMode = Field(default=BondlingMode.MODE1,
-                                        description='只刷探查:自动切换契灵对应地域\n低级式盘:自动切换非连续,非羁绊\n中级式盘:自动切换连续,羁绊\n'
-                                                    '探查加契灵刷取:自动探查直到目标契灵出现,使用低级式盘刷取指定数量(仅限单刷)')
+                                        description='只刷探查:只执行探查(仅限单刷)\n'
+                                                    '低级式盘:自动切换非连续,非羁绊\n'
+                                                    '中级式盘:自动切换连续,羁绊\n'
+                                                    '刷契灵时可通过“没有契灵时自动探查”开启循环探查')
     limit_time: Time = Field(default=Time(minute=30), description='limit_time_help')
     limit_count: int = Field(default=30, description='limit_count_help')
     bondling_stone_class: BondlingClass = Field(default=BondlingClass.TOMB_GUARD, description='设置需要刷的契灵')
     bondling_stone_enable: bool = Field(default=False, description='没有契灵了是否使用鸣契石购买契灵')
     bondling_search_enable: bool = Field(default=False, description='没有契灵了是否自动探查(要求身份必须是alone,否则此项无效)\n'
-                                                                    '探查加契灵刷取模式会自动探查,无需开启此项\n'
                                                                     '若启用了购买契灵则优先购买契灵,购买失败则进行探查\n'
                                                                     '若启用了切换御魂则切换契灵御魂的同时也会切换探查御魂\n'
                                                                     '注:探查耗费的时间与次数也计入总时间和次数中')
-    check_enable: bool = Field(default=True, description='是否检查契忆数量(探查加契灵刷取模式下不检查)')
-    limit_num: int = Field(default=2000,
-                           description='探查加契灵刷取模式下为目标契灵刷取数量;'
-                                       '其他模式下为契忆数量限制(仅在任务开始时判断)')
+    limit_num: int = Field(default=10, ge=1, description='目标契灵成功捕获数量')
+
+    @model_validator(mode='before')
+    @classmethod
+    def migrate_search_and_catch_mode(cls, data):
+        """旧“探查加契灵刷取”迁移为低级式盘并开启无契灵自动探查。"""
+        if not isinstance(data, dict):
+            return data
+        data = dict(data)
+        old_mode = data.get('bondling_mode')
+        if old_mode in ['mode_5', '探查加契灵刷取(低级式盘)']:
+            data['bondling_mode'] = BondlingMode.MODE2.value
+            data['bondling_search_enable'] = True
+        return data
 
     @field_validator("bondling_mode", mode="before")
     def convert_old_value(cls, v):
@@ -78,7 +88,7 @@ class BondlingConfig(ConfigBase):
             "mode_1": "只刷探查(仅限单刷)",
             'mode_2': '只刷契灵(低级式盘)',
             'mode_3': '只刷契灵(中级式盘)',
-            'mode_5': '探查加契灵刷取(低级式盘)'
+            'mode_4': '只刷契灵(高级式盘)'
         }
         return old_new_map.get(v, v)
 

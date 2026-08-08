@@ -1,25 +1,25 @@
 [
   {
     "itemName": "stone_1",
-    "roiFront": "228,502,26,58",
+    "roiFront": "226,476,33,37",
     "roiBack": "0,0,100,100",
     "description": "description"
   },
   {
     "itemName": "stone_2",
-    "roiFront": "439,528,25,62",
+    "roiFront": "441,509,32,29",
     "roiBack": "0,0,100,100",
     "description": "description"
   },
   {
     "itemName": "stone_3",
-    "roiFront": "687,505,26,56",
+    "roiFront": "687,470,30,36",
     "roiBack": "0,0,100,100",
     "description": "description"
   },
   {
     "itemName": "stone_4",
-    "roiFront": "944,497,22,50",
+    "roiFront": "939,469,30,33",
     "roiBack": "0,0,100,100",
     "description": "description"
   },
