@@ -46,9 +46,9 @@
   },
   {
     "itemName": "b_summon_ball_number",
-    "roiFront": "546,540,100,45",
-    "roiBack": "546,540,100,45",
-    "mode": "Single",
+    "roiFront": "575,535,40,55",
+    "roiBack": "575,535,40,55",
+    "mode": "Digit",
     "method": "Default",
     "keyword": "",
     "description": "召唤契灵数量"

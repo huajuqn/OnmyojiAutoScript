@@ -46,5 +46,11 @@
     "roiFront": "628,314,108,137",
     "roiBack": "0,0,100,100",
     "description": "平安京地域"
+  },
+  {
+    "itemName": "plate_shortage_continue",
+    "roiFront": "694,413,130,38",
+    "roiBack": "0,0,100,100",
+    "description": "式盘数量不足弹窗-继续挑战"
   }
 ]

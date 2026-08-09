@@ -289,6 +289,7 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
             if target_catch_count >= target_catch_limit:
                 logger.info(f'Target bondling catch limit reached: {target_catch_count}/{target_catch_limit}')
                 break
+            remaining_goal = target_catch_limit - target_catch_count
             if self.task_limit_reached():
                 break
             if not self.in_search_ui(screenshot=True):
@@ -297,7 +298,8 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 continue
 
             if not self.bondling_appeared(current_ball_index):
-                acquire_result = self.acquire_target(bondling_config, current_ball_index)
+                acquire_result = self.acquire_target(
+                    bondling_config, current_ball_index, remaining_goal=remaining_goal)
                 if acquire_result is AcquireResult.TARGET_AVAILABLE:
                     continue
                 if acquire_result is AcquireResult.RESOURCE_EXHAUSTED:
@@ -310,7 +312,8 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 # 加号被遮挡时可能把空槽误判成契灵。先退回主界面，再按统一流程 OCR。
                 logger.info('Target state corrected by shop UI')
                 self.return_to_search_ui()
-                acquire_result = self.acquire_target(bondling_config, current_ball_index, known_missing=True)
+                acquire_result = self.acquire_target(
+                    bondling_config, current_ball_index, remaining_goal=remaining_goal, known_missing=True)
                 if acquire_result is AcquireResult.TARGET_AVAILABLE:
                     continue
                 break
@@ -368,6 +371,91 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 sleep(0.3)
         return None
 
+    def get_stone_purchase_quantity(self, retry: int = 6) -> int | None:
+        """识别购买弹窗当前选择数量；None 表示连续识别失败。"""
+        results = []
+        required_matches = 1 if retry <= 1 else 2
+        for attempt in range(retry):
+            self.screenshot()
+            result = self.O_B_SUMMON_BALL_NUMBER.ocr(self.device.image)
+            try:
+                quantity = int(result)
+            except (TypeError, ValueError):
+                quantity = 0
+            if quantity > 0:
+                results.append(quantity)
+                if results.count(quantity) >= required_matches:
+                    logger.info(f'Stone purchase quantity: {quantity}')
+                    return quantity
+            else:
+                logger.warning(f'Invalid Stone purchase quantity OCR result: {result}, '
+                               f'attempt: {attempt + 1}/{retry}')
+            if attempt < retry - 1:
+                sleep(0.3)
+        logger.warning(f'Unstable Stone purchase quantity OCR results: {results}')
+        return None
+
+    def set_stone_purchase_quantity(self, purchase_limit: int) -> int | None:
+        """
+        使用单次加减按钮将购买数量调整到不超过 purchase_limit。
+        返回最终稳定数量；None 表示按钮或 OCR 异常，此方法不会点击购买确认。
+        """
+        if purchase_limit <= 0:
+            logger.warning(f'Invalid Stone purchase limit: {purchase_limit}')
+            return None
+
+        current = self.get_stone_purchase_quantity()
+        if current is None:
+            return None
+
+        adjust_count = 0
+        max_adjust_count = 60
+        while current != purchase_limit and adjust_count < max_adjust_count:
+            increase = current < purchase_limit
+            target = self.I_BUY_ADD if increase else self.I_BUY_SUB
+            previous = current
+            changed = False
+
+            for _ in range(3):
+                self.screenshot()
+                if not self.appear_then_click(target, interval=0.2):
+                    sleep(0.2)
+                    continue
+                change_timer = Timer(5).start()
+                while not change_timer.reached():
+                    quantity = self.get_stone_purchase_quantity()
+                    if quantity is not None and quantity != previous:
+                        current = quantity
+                        changed = True
+                        break
+                    sleep(0.2)
+                if changed:
+                    break
+
+            if not changed:
+                # 增加键到达游戏上限时允许购买较小数量，但绝不超过目标剩余值。
+                if increase and 0 < current <= purchase_limit:
+                    logger.info(f'Stone purchase reached UI limit: {current}/{purchase_limit}')
+                    break
+                logger.warning(f'Cannot adjust Stone purchase quantity: {current} -> {purchase_limit}')
+                return None
+            adjust_count += 1
+
+        if current != purchase_limit and adjust_count >= max_adjust_count:
+            logger.warning('Stone purchase quantity adjustment exceeded safety limit')
+            return None
+
+        sleep(0.3)
+        verified = self.get_stone_purchase_quantity()
+        if verified is None or verified != current:
+            logger.warning(f'Unstable Stone purchase quantity: {current} -> {verified}')
+            return None
+        if not 1 <= verified <= purchase_limit:
+            logger.warning(f'Stone purchase quantity exceeds target remainder: {verified}/{purchase_limit}')
+            return None
+        logger.info(f'Stone purchase quantity ready: {verified}/{purchase_limit}')
+        return verified
+
     def get_plate_ocr_target(self, mode: BondlingMode):
         """返回当前刷取策略对应的式盘数量 OCR。"""
         targets = {
@@ -399,8 +487,10 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         return None
 
     def acquire_target(self, bondling_config: BondlingConfig, target_index: int,
-                       known_missing: bool = False) -> AcquireResult:
+                       remaining_goal: int, known_missing: bool = False) -> AcquireResult:
         """无目标契灵时，统一处理主界面 Stone OCR、购买与单次探查。"""
+        if remaining_goal <= 0:
+            return AcquireResult.STOPPED
         while 1:
             if self.task_limit_reached():
                 return AcquireResult.STOPPED
@@ -416,13 +506,17 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
             if bondling_config.bondling_stone_enable:
                 stone_count = self.get_main_stone_count()
                 if stone_count is not None and stone_count > 0:
+                    purchase_limit = min(remaining_goal, stone_count)
                     slot_result = self.open_bondling_slot(target_index)
                     if slot_result is SlotResult.SHOP:
-                        purchased = self.run_stone(True)
+                        purchased = self.run_stone(purchase_limit)
                         self.return_to_search_ui()
-                        if purchased:
+                        if purchased > 0:
+                            logger.info(f'Purchased target bondling: {purchased}, '
+                                        f'remaining goal before capture: {remaining_goal}')
                             # 购买后不假设成功，回到循环顶部重新检查目标。
                             continue
+                        return AcquireResult.STOPPED
                     if slot_result is SlotResult.CATCH:
                         # 状态在 OCR 期间变化，退回主界面后切契灵套装再进入。
                         self.return_to_search_ui()
@@ -448,47 +542,63 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 return AcquireResult.RESOURCE_EXHAUSTED
             # 探查和契灵战斗都可能掉落 Stone，每次探查后回到顶部重新 OCR。
 
-    def run_stone(self, bondling_stone_enable: bool):
+    def run_stone(self, purchase_limit: int) -> int:
         """
-        使用结契石进行召唤契灵。
+        按目标剩余值上限使用结契石召唤契灵。
         前置条件：必须已在购买界面（由 open_bondling_slot 确保）。
-        :param bondling_stone_enable:
-        :return:
-        (0) 不开启使用结契石，返回False
-        (1) 没有结契石了，返回False
-        (2) 购买成功，返回True
+        :return: 实际购买数量；0 表示未购买或购买失败。
         """
-        if not bondling_stone_enable:
-            logger.info('Bondling stone purchase is disabled')
-            self.ui_click_until_disappear(self.I_STONE_CLOSE, interval=1.2)
-            return False
+        if purchase_limit <= 0:
+            logger.warning(f'Invalid Stone purchase limit: {purchase_limit}')
+            return 0
         self.screenshot()
         if not self.appear(self.I_STONE_SURE):
             logger.warning('Stone purchase confirmation is not visible')
-            return False
+            return 0
         # Stone 数量只允许在契灵主界面识别；进入商店后不再重复 OCR。
-        timeout = Timer(20).start()
+        selected_quantity = self.set_stone_purchase_quantity(purchase_limit)
+        if selected_quantity is None:
+            logger.warning('Set Stone purchase quantity failed')
+            return 0
+        timeout = Timer(25).start()
         purchase_clicked = False
+        secondary_confirmed = False
+        secondary_confirmation_timer = None
         while 1:
             self.screenshot()
-            if self.appear_then_click(self.I_GI_SURE, interval=1):
-                continue
-            if not self.appear(self.I_STONE_SURE):
-                if purchase_clicked:
-                    sleep(random.uniform(1.5, 2))
-                    return True
-                logger.warning('Stone purchase UI disappeared before confirmation')
-                return False
             if timeout.reached():
                 logger.warning('Stone purchase timeout')
                 self.ui_click_until_disappear(self.I_STONE_CLOSE, interval=1.2)
-                return False
-            for i in range(3):
-                if self.appear_then_click(self.I_BUY_PLUS, interval=1):
-                    sleep(0.5)
-            if self.appear_then_click(self.I_STONE_SURE, interval=1):
-                purchase_clicked = True
+                return 0
+
+            if not purchase_clicked:
+                if not self.appear(self.I_STONE_SURE):
+                    logger.warning('Stone purchase UI disappeared before confirmation')
+                    return 0
+                if self.appear_then_click(self.I_STONE_SURE, interval=1):
+                    purchase_clicked = True
+                    secondary_confirmation_timer = Timer(5).start()
+                    logger.info('Stone purchase clicked, wait for secondary confirmation')
+                    sleep(0.8)
                 continue
+
+            # 购买按钮一轮只允许点击一次。即使动画期间按钮仍残留，也只等待二次确认，
+            # 防止再次下单后进入无法识别的确认弹窗。
+            if not secondary_confirmed and self.appear_then_click(self.I_GI_SURE, interval=1):
+                secondary_confirmed = True
+                logger.info('Stone secondary confirmation clicked, wait for purchase animation')
+                sleep(random.uniform(2.5, 3.5))
+                continue
+
+            if not self.appear(self.I_STONE_SURE):
+                if not secondary_confirmed and not secondary_confirmation_timer.reached():
+                    sleep(0.3)
+                    continue
+                if not secondary_confirmed:
+                    logger.info('Stone purchase completed without secondary confirmation')
+                sleep(random.uniform(1.0, 1.5))
+                return selected_quantity
+            sleep(0.3)
 
     def run_search(self, bondling_config: BondlingConfig, target_index: int = None, limit_cnt: int = None):
         """
@@ -750,8 +860,10 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         if mode == BondlingMode.MODE3:
             target_true = self.I_C_MIDUM_TRUE
             target_false = self.I_C_MIDUM_FALSE
-            target_first = self.I_C_FIRST_ENABLE
-            target_continuous = self.I_C_CONTINUOUS_ENABLE
+            target_first = self.I_C_FIRST_DISABLE
+            target_continuous = self.I_C_CONTINUOUS_DISABLE
+            #target_first = self.I_C_FIRST_ENABLE
+            #target_continuous = self.I_C_CONTINUOUS_ENABLE
         elif mode == BondlingMode.MODE2:
             target_true = self.I_C_LOW_TRUE
             target_false = self.I_C_LOW_FALSE
@@ -888,6 +1000,40 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         limit_time = self.config.bondling_fairyland.bondling_config.limit_time
         return timedelta(hours=limit_time.hour, minutes=limit_time.minute, seconds=limit_time.second)
 
+    def handle_plate_shortage_warning(self) -> bool:
+        """处理式盘少于 10 时的继续挑战提示；返回是否检测到该弹窗。"""
+        if not self.appear(self.I_PLATE_SHORTAGE_GET):
+            return False
+
+        logger.info('Plate shortage warning detected')
+        if not self.appear(self.I_PLATE_SHORTAGE_REMIND_ON):
+            if not self.appear_then_click(self.I_PLATE_SHORTAGE_REMIND_OFF, interval=0.5):
+                logger.warning('Cannot detect plate shortage reminder checkbox state')
+                return True
+
+            check_timer = Timer(3).start()
+            while not check_timer.reached():
+                self.screenshot()
+                if self.appear(self.I_PLATE_SHORTAGE_REMIND_ON):
+                    break
+                sleep(0.2)
+            else:
+                logger.warning('Enable plate shortage reminder checkbox timeout')
+                return True
+
+        logger.info('Plate shortage reminder checkbox enabled')
+        self.click(self.C_PLATE_SHORTAGE_CONTINUE, interval=0.5)
+
+        disappear_timer = Timer(5).start()
+        while not disappear_timer.reached():
+            self.screenshot()
+            if not self.appear(self.I_PLATE_SHORTAGE_GET):
+                logger.info('Plate shortage warning handled')
+                return True
+            sleep(0.2)
+        logger.warning('Plate shortage warning did not disappear after continue')
+        return True
+
     def run_alone(self):
         """
         单人 挑战， 主要是结契时的挑战
@@ -895,6 +1041,8 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         click_count = 0
         while 1:
             self.screenshot()
+            if self.handle_plate_shortage_warning():
+                continue
             if not self.appear(self.I_BALL_FIRE, threshold=0.7):
                 break
             if self.appear_then_click(self.I_BALL_FIRE, interval=1):
@@ -1101,5 +1249,5 @@ if __name__ == '__main__':
     # con = config.bondling_fairyland
     # task.lock_team()
     # t.switch_ball()
-    # t.run_stone(True,BondlingClass.TOMB_GUARD)
+    # t.run_stone(3)
     # task.run_invite(config=config.bondling_fairyland.invite_config, is_over=False, is_first=True)

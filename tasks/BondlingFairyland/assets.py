@@ -27,6 +27,8 @@ class BondlingFairylandAssets:
 	C_AREA_2 = RuleClick(roi_front=(689,118,121,77), roi_back=(0,0,100,100), name="area_2")
 	# 平安京地域 
 	C_AREA_1 = RuleClick(roi_front=(628,314,108,137), roi_back=(0,0,100,100), name="area_1")
+	# 式盘数量不足弹窗-继续挑战
+	C_PLATE_SHORTAGE_CONTINUE = RuleClick(roi_front=(694,413,130,38), roi_back=(0,0,100,100), name="plate_shortage_continue")
 
 
 	# Ocr Rule Assets
@@ -41,7 +43,7 @@ class BondlingFairylandAssets:
 	# 鸣契石 
 	O_B_STONE_NUMBER = RuleOcr(roi=(1135,16,78,32), area=(1135,16,78,32), mode="DigitCounter", method="Default", keyword="", name="b_stone_number")
 	# 召唤契灵数量 
-	O_B_SUMMON_BALL_NUMBER = RuleOcr(roi=(546,540,100,45), area=(546,540,100,45), mode="Single", method="Default", keyword="", name="b_summon_ball_number")
+	O_B_SUMMON_BALL_NUMBER = RuleOcr(roi=(575,535,40,55), area=(575,535,40,55), mode="Digit", method="Default", keyword="", name="b_summon_ball_number")
 	# 抓捕契灵剩余数量 
 	O_B_BALL_NUMBER = RuleOcr(roi=(1186,666,65,26), area=(1186,666,65,26), mode="DigitCounter", method="Default", keyword="", name="b_ball_number")
 	# 好友邀请 
@@ -69,6 +71,12 @@ class BondlingFairylandAssets:
 	I_BALL_AREA = RuleImage(roi_front=(61,631,50,48), roi_back=(8,582,138,137), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/ball/ball_ball_area.png")
 	# 地域页面 
 	I_CHECK_AREA = RuleImage(roi_front=(489,377,238,95), roi_back=(454,337,314,170), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/ball/ball_check_area.png")
+	# 式盘数量不足弹窗-获取式盘
+	I_PLATE_SHORTAGE_GET = RuleImage(roi_front=(453,410,139,45), roi_back=(453,410,139,45), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/ball/ball_plate_shortage_get.png")
+	# 式盘数量不足弹窗-今日不再提示未勾选
+	I_PLATE_SHORTAGE_REMIND_OFF = RuleImage(roi_front=(542,342,37,37), roi_back=(542,342,37,37), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/ball/ball_plate_shortage_remind_off.png")
+	# 式盘数量不足弹窗-今日不再提示已勾选
+	I_PLATE_SHORTAGE_REMIND_ON = RuleImage(roi_front=(542,342,37,37), roi_back=(542,342,37,37), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/ball/ball_plate_shortage_remind_on.png")
 
 
 	# Image Rule Assets
@@ -188,10 +196,9 @@ class BondlingFairylandAssets:
 	# description 
 	I_BUY_PLUS = RuleImage(roi_front=(765,543,43,40), roi_back=(765,543,43,40), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/stone/buy_plus.png")
 	# description 
-	I_BUY_ADD = RuleImage(roi_front=(678,540,43,40), roi_back=(678,540,43,40), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/stone/buy_add.png")
+	I_BUY_ADD = RuleImage(roi_front=(682,540,43,40), roi_back=(682,540,43,40), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/stone/buy_add.png")
 	# description 
 	I_BUY_SUB = RuleImage(roi_front=(468,540,43,40), roi_back=(468,540,43,40), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/stone/buy_sub.png")
 	# 关闭购买契灵页面 
 	I_STONE_CLOSE = RuleImage(roi_front=(911,56,42,38), roi_back=(888,49,100,100), threshold=0.8, method="Template matching", file="./tasks/BondlingFairyland/stone/stone_stone_close.png")
-
 

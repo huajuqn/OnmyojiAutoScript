@@ -70,5 +70,32 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "地域页面"
+  },
+  {
+    "itemName": "plate_shortage_get",
+    "imageName": "ball_plate_shortage_get.png",
+    "roiFront": "453,410,139,45",
+    "roiBack": "453,410,139,45",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "式盘数量不足弹窗-获取式盘"
+  },
+  {
+    "itemName": "plate_shortage_remind_off",
+    "imageName": "ball_plate_shortage_remind_off.png",
+    "roiFront": "542,342,37,37",
+    "roiBack": "542,342,37,37",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "式盘数量不足弹窗-今日不再提示未勾选"
+  },
+  {
+    "itemName": "plate_shortage_remind_on",
+    "imageName": "ball_plate_shortage_remind_on.png",
+    "roiFront": "542,342,37,37",
+    "roiBack": "542,342,37,37",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "式盘数量不足弹窗-今日不再提示已勾选"
   }
 ]

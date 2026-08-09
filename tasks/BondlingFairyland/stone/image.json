@@ -29,8 +29,8 @@
   {
     "itemName": "buy_add",
     "imageName": "buy_add.png",
-    "roiFront": "678,540,43,40",
-    "roiBack": "678,540,43,40",
+    "roiFront": "682,540,43,40",
+    "roiBack": "682,540,43,40",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "description"
