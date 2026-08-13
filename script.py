@@ -175,7 +175,10 @@ class Script:
         设置给gui显示的任务 的参数的具体值
         :return:
         """
+        from tasks.MartialTraining.gui_text import normalize_config_value
+
         # 验证参数
+        task, group, argument, value = normalize_config_value(task, group, argument, value)
         task = convert_to_underscore(task)
         group = convert_to_underscore(group)
         argument = convert_to_underscore(argument)

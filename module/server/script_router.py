@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 from fastapi import WebSocket, WebSocketDisconnect
 from datetime import datetime
 from module.config.utils import convert_to_underscore
+from tasks.MartialTraining.gui_text import normalize_config_path
 
 from module.logger import logger
 from module.server.main_manager import mm
@@ -85,6 +86,7 @@ async def config_delete(name: str = ''):
 async def task_copy(task_name: str, dest_config_name: str, source_config_name: str):
     if dest_config_name not in mm.script_process or source_config_name not in mm.script_process:
         return False
+    task_name, _, _ = normalize_config_path(task_name)
     source_task = getattr(mm.config_cache(source_config_name).model, convert_to_underscore(task_name), None)
     if source_task is None:
         return False
@@ -95,6 +97,7 @@ async def task_copy(task_name: str, dest_config_name: str, source_config_name: s
 async def task_group_copy(task_name: str, group_name: str, dest_config_name: str, source_config_name: str):
     if dest_config_name not in mm.script_process or source_config_name not in mm.script_process:
         return False
+    task_name, group_name, _ = normalize_config_path(task_name, group_name)
     source_task = getattr(mm.config_cache(source_config_name).model, convert_to_underscore(task_name), None)
     if source_task is None:
         return False
@@ -161,6 +164,7 @@ async def sync_next_run(script_name: str, task: str, target_dt: str):
         return False
     config = mm.config_cache(script_name)
     target = datetime.strptime(target_dt, '%Y-%m-%d %H:%M:%S') if target_dt else None
+    task, _, _ = normalize_config_path(task)
     config.task_delay(task=task, success=True, target=target)
     script_process = mm.script_process[script_name]
     config.get_next()

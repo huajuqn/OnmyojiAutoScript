@@ -1,0 +1,173 @@
+[
+  {
+    "itemName": "activity_entry",
+    "imageName": "mt_activity_entry.png",
+    "roiFront": "1195,465,27,33",
+    "roiBack": "1169,112,81,452",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "庭院活动入口"
+  },
+  {
+    "itemName": "training_entry",
+    "imageName": "mt_training_entry.png",
+    "roiFront": "1115,258,31,126",
+    "roiBack": "1101,209,56,217",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "修行合训入口"
+  },
+  {
+    "itemName": "training_page",
+    "imageName": "mt_training_page.png",
+    "roiFront": "532,408,122,109",
+    "roiBack": "254,57,708,585",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "修行合训页面"
+  },
+  {
+    "itemName": "home_button",
+    "imageName": "mt_home_button.png",
+    "roiFront": "208,119,28,28",
+    "roiBack": "0,4,345,65",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "活动内庭院按钮"
+  },
+  {
+    "itemName": "search_normal",
+    "imageName": "mt_search_normal.png",
+    "roiFront": "1110,609,65,31",
+    "roiBack": "1104,603,77,43",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "普通门票搜索按钮"
+  },
+  {
+    "itemName": "search_special",
+    "imageName": "mt_search_special.png",
+    "roiFront": "1105,597,74,44",
+    "roiBack": "1098,590,88,58",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "特殊门票搜索按钮"
+  },
+  {
+    "itemName": "ticket_switch",
+    "imageName": "mt_ticket_switch.png",
+    "roiFront": "1167,540,23,24",
+    "roiBack": "1133,499,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "门票类型切换按钮"
+  },
+  {
+    "itemName": "ticket_normal",
+    "imageName": "mt_ticket_normal.png",
+    "roiFront": "1094,532,28,40",
+    "roiBack": "1056,522,100,56",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "普通门票模式标志"
+  },
+  {
+    "itemName": "ticket_special",
+    "imageName": "mt_ticket_special.png",
+    "roiFront": "1095,533,24,39",
+    "roiBack": "1058,525,100,54",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "特殊门票模式标志"
+  },
+  {
+    "itemName": "search_locked",
+    "imageName": "mt_search_locked.png",
+    "roiFront": "1123,603,35,38",
+    "roiBack": "1070,575,137,110",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "已有鬼王时的搜索锁定状态"
+  },
+  {
+    "itemName": "first_boss",
+    "imageName": "mt_first_boss.png",
+    "roiFront": "107,85,100,100",
+    "roiBack": "19,78,260,115",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "第一个鬼王入口"
+  },
+  {
+    "itemName": "no_boss",
+    "imageName": "mt_no_boss.png",
+    "roiFront": "107,85,100,100",
+    "roiBack": "19,78,260,115",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "第一个鬼王槽位为空"
+  },
+  {
+    "itemName": "boss_page",
+    "imageName": "mt_boss_page.png",
+    "roiFront": "553,69,171,44",
+    "roiBack": "480,42,331,85",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "鬼王挑战页面"
+  },
+  {
+    "itemName": "boss_close",
+    "imageName": "mt_boss_close.png",
+    "roiFront": "1182,67,44,50",
+    "roiBack": "1153,50,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "关闭鬼王挑战页面"
+  },
+  {
+    "itemName": "challenge",
+    "imageName": "mt_challenge.png",
+    "roiFront": "1106,536,75,75",
+    "roiBack": "1093,525,100,90",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "挑战鬼王按钮"
+  },
+  {
+    "itemName": "records_entry",
+    "imageName": "mt_records_entry.png",
+    "roiFront": "1000,596,34,32",
+    "roiBack": "979,577,79,72",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "活动内式神录入口"
+  },
+  {
+    "itemName": "team_unlocked",
+    "imageName": "mt_team_unlocked.png",
+    "roiFront": "1100,454,23,26",
+    "roiBack": "1084,441,100,54",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "阵容未锁定状态"
+  },
+  {
+    "itemName": "team_locked",
+    "imageName": "mt_team_locked.png",
+    "roiFront": "1101,455,21,27",
+    "roiBack": "1084,444,100,47",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "阵容已锁定状态"
+  },
+  {
+    "itemName": "continue_challenge",
+    "imageName": "assets_continue_challenge.png",
+    "roiFront": "1109,540,69,74",
+    "roiBack": "1093,526,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": ""
+  }
+]

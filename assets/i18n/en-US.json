@@ -1,3 +1,18 @@
 {
-
+  "MartialTraining": "Training Assembly",
+  "training_config": "Training Assembly Settings",
+  "fire_boss_soul": "Blazing Boss Soul Settings",
+  "soul_boss_soul": "Soul-Fusion Boss Soul Settings",
+  "other_boss_soul": "Other Boss Soul Settings",
+  "battle_config": "Battle Settings",
+  "run_sequence": "Ticket Run Sequence",
+  "martial_training_run_sequence_help": "Use normal and special, separated by an English comma.",
+  "normal_enable": "Enable Normal Tickets",
+  "normal_enable_help": "Search and challenge normal-ticket bosses in the configured sequence.",
+  "normal_limit": "Normal Ticket Limit",
+  "normal_limit_help": "Counts only after the search button enters the locked state; an existing boss is not counted again.",
+  "special_enable": "Enable Special Tickets",
+  "special_enable_help": "Search and challenge special-ticket bosses in the configured sequence.",
+  "special_limit": "Special Ticket Limit",
+  "special_limit_help": "Counts only after the search button enters the locked state; an existing boss is not counted again."
 }

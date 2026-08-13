@@ -1,0 +1,29 @@
+[
+  {
+    "itemName": "normal_ticket_count",
+    "roiFront": "951,18,61,28",
+    "roiBack": "948,15,66,33",
+    "mode": "Single",
+    "method": "Default",
+    "keyword": "",
+    "description": "普通门票数量"
+  },
+  {
+    "itemName": "special_ticket_count",
+    "roiFront": "1149,20,67,24",
+    "roiBack": "1143,16,77,31",
+    "mode": "Single",
+    "method": "Default",
+    "keyword": "",
+    "description": "特殊门票数量"
+  },
+  {
+    "itemName": "boss_name",
+    "roiFront": "363,190,38,190",
+    "roiBack": "363,190,38,190",
+    "mode": "Single",
+    "method": "Default",
+    "keyword": "",
+    "description": "鬼王名称"
+  }
+]

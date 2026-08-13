@@ -21,6 +21,7 @@ from module.config.config_state import ConfigState
 from module.config.scheduler import TaskScheduler
 from module.config.utils import *
 from module.notify.notify import Notifier
+from tasks.MartialTraining.gui_text import display_task_name
 
 from module.exception import RequestHumanTakeover, ScriptError
 from module.logger import logger
@@ -250,16 +251,16 @@ class Config(ConfigState, ConfigManual, ConfigWatcher, ConfigMenu):
         scheduler_update_dt = getattr(self, 'scheduler_update_dt', datetime.now())
         running = {}
         if self.task is not None and self.task.next_run < scheduler_update_dt:
-            running = {"name": self.task.command, "next_run": str(self.task.next_run)}
+            running = {"name": display_task_name(self.task.command), "next_run": str(self.task.next_run)}
 
         pending = []
         for p in self.pending_task[1:]:
-            item = {"name": p.command, "next_run": str(p.next_run)}
+            item = {"name": display_task_name(p.command), "next_run": str(p.next_run)}
             pending.append(item)
 
         waiting = []
         for w in self.waiting_task:
-            item = {"name": w.command, "next_run": str(w.next_run)}
+            item = {"name": display_task_name(w.command), "next_run": str(w.next_run)}
             waiting.append(item)
 
         data = {"running": running, "pending": pending, "waiting": waiting}

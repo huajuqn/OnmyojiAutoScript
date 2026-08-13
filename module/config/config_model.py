@@ -60,6 +60,8 @@ from tasks.FloatParade.config import FloatParade
 from tasks.Quiz.config import Quiz
 from tasks.KittyShop.config import KittyShop
 from tasks.DyeTrials.config import DyeTrials
+from tasks.MartialTraining.config import MartialTraining
+from tasks.MartialTraining.gui_text import localize_gui_config, normalize_config_path, normalize_config_value
 # ----------------------------------------------------------------------------------------------------------------------
 
 # 肝帝专属---------------------------------------------------------------------------------------------------------------
@@ -124,6 +126,7 @@ class ConfigModel(ConfigBase):
     quiz: Quiz = Field(default_factory=Quiz)
     kitty_shop: KittyShop = Field(default_factory=KittyShop)
     dye_trials: DyeTrials = Field(default_factory=DyeTrials)
+    martial_training: MartialTraining = Field(default_factory=MartialTraining)
 
     # 这些是肝帝专属
     bondling_fairyland: BondlingFairyland = Field(default_factory=BondlingFairyland)
@@ -201,6 +204,7 @@ class ConfigModel(ConfigBase):
         :param task: 输入的是任务的名称英文 如'Script' 或者是'script'都是可以的
         :return: 返回的是pydantic给我们结构化的输出的信息, 如果不能获取就返回空的str
         """
+        task, _, _ = normalize_config_path(task)
         task = convert_to_underscore(task)
         task_gui = getattr(self, task, None)
         if task_gui is None:
@@ -225,6 +229,7 @@ class ConfigModel(ConfigBase):
         :param task:
         :return:
         """
+        task, _, _ = normalize_config_path(task)
         task_name = convert_to_underscore(task)
         task = getattr(self, task_name, None)
         if task is None:
@@ -294,10 +299,11 @@ class ConfigModel(ConfigBase):
         :param task: 同gui_args函数
         :return:
         """
-        task = convert_to_underscore(task)
-        task = getattr(self, task, None)
+        task, _, _ = normalize_config_path(task)
+        task_name = convert_to_underscore(task)
+        task = getattr(self, task_name, None)
         if task is None:
-            logger.warning(f'{task} is no inexistence')
+            logger.warning(f'{task_name} is no inexistence')
             return {}
 
         def extract_groups(sch):
@@ -352,10 +358,13 @@ class ConfigModel(ConfigBase):
                         groups_value[key] = groups[group_name]
             result[key] = merge_value(groups_value[key], value, schema["$defs"])
 
+        if task_name == 'martial_training':
+            return localize_gui_config(result)
         return result
 
     def script_set_arg(self, task: str, group: str, argument: str, value) -> bool:
         # 验证参数
+        task, group, argument, value = normalize_config_value(task, group, argument, value)
         task = convert_to_underscore(task)
         group = convert_to_underscore(group)
         argument = convert_to_underscore(argument)
@@ -415,6 +424,7 @@ class ConfigModel(ConfigBase):
             return False
 
     def copy_script_task(self, task_name: str, source_task: BaseModel) -> bool:
+        task_name, _, _ = normalize_config_path(task_name)
         model_task_name = convert_to_underscore(task_name)
         try:
             setattr(self, model_task_name, source_task)
@@ -426,6 +436,7 @@ class ConfigModel(ConfigBase):
             return False
 
     def copy_task_group(self, task_name: str, group_name: str, source_task: BaseModel) -> bool:
+        task_name, group_name, _ = normalize_config_path(task_name, group_name)
         model_task_name = convert_to_underscore(task_name)
         model_group_name = convert_to_underscore(group_name)
         task_object = getattr(self, model_task_name, None)
@@ -481,4 +492,3 @@ if __name__ == "__main__":
         c = ConfigModel()
 
     print(c.script_task('GuildBanquet'))
-

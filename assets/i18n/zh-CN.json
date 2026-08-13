@@ -41,5 +41,21 @@
   "emulator_startup_lead_time": "模拟器预热时间",
   "emulator_startup_lead_time_help": "在开始运行任务之前提前启动模拟器的时间",
   "exit_four_help": "支持打九退四，保证稳定57级，要求设置好战斗主题，即 脚本->全局配置->游戏装饰自定义->战斗主题",
-  "costume_main_15": "茨心乐园"
+  "costume_main_15": "茨心乐园",
+  "MartialTraining": "修行合训",
+  "training_config": "修行合训任务设置",
+  "fire_boss_soul": "炽火 Boss 御魂设置",
+  "soul_boss_soul": "合魂 Boss 御魂设置",
+  "other_boss_soul": "其他 Boss 御魂设置",
+  "battle_config": "战斗设置",
+  "run_sequence": "门票执行顺序",
+  "martial_training_run_sequence_help": "支持 normal（普通门票）和 special（特殊门票），使用英文逗号分隔",
+  "normal_enable": "启用普通门票",
+  "normal_enable_help": "按执行顺序搜索并挑战普通门票鬼王",
+  "normal_limit": "普通门票次数限制",
+  "normal_limit_help": "只在搜索按钮进入锁定状态后计数，已有鬼王不会重复计数",
+  "special_enable": "启用特殊门票",
+  "special_enable_help": "按执行顺序搜索并挑战特殊门票鬼王",
+  "special_limit": "特殊门票次数限制",
+  "special_limit_help": "只在搜索按钮进入锁定状态后计数，已有鬼王不会重复计数"
 }
