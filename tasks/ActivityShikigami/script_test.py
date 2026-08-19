@@ -18,7 +18,8 @@ class ImplScriptTask(ScriptTask, ABC):
         # 从活动主页面到默认战斗页面
         self.ui_click(self.I_TO_BATTLE_MAIN, stop=self.I_CHECK_BATTLE_MAIN, interval=1)
         # 从默认战斗页面到式神录 再返回
-        self.ui_click(self.I_BATTLE_MAIN_TO_RECORDS, stop=self.I_CHECK_RECORDS, interval=1)
+        self.ui_click_until_disappear(self.I_SHISHENLU, interval=1)
+        self.wait_until_appear(self.O_CHECK_RECORDS_TITLE, wait_time=10)
         self.ui_click(self.I_UI_BACK_YELLOW, stop=self.I_CHECK_BATTLE_MAIN, interval=1)
         self.ui_click(self.I_UI_BACK_YELLOW, stop=self.I_TO_BATTLE_MAIN, interval=1)
         return True
@@ -34,7 +35,6 @@ class ScriptTest:
 if __name__ == '__main__':
     test = ScriptTest(config='oas1')
     assert test.task.test_battle_main()
-
 
 
 

@@ -181,7 +181,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         logger.hr(f'Start run climb type PASS', 1)
         self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
                        stop=self.I_FIRE_BUTTON, interval=1)
-        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_FIRE_BUTTON)
+        self.switch_soul(self.I_SHISHENLU, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('pass')
 
         ocr_limit_timer = Timer(1).start()
@@ -220,7 +220,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         logger.hr(f'Start run climb type AP')
         self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
                        stop=self.I_FIRE_BUTTON, interval=1)
-        self.switch_soul(self.I_BATTLE_MAIN_TO_RECORDS, self.I_FIRE_BUTTON)
+        self.switch_soul(self.I_SHISHENLU, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('ap')
 
         ocr_limit_timer = Timer(1).start()
@@ -347,7 +347,16 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             return
         logger.hr('Start switch soul', 2)
         conf.validate_switch_soul()
-        self.ui_click(enter_button, stop=self.O_CHECK_RECORDS_TITLE, interval=1)
+        # 当前活动标题“神威破障”会被宽松的“式神录”OCR误命中，不能把
+        # OCR 作为点击入口前的停止条件。先确保入口图片确实被点击并消失，
+        # 再等待式神录页面完成加载。
+        if not self.wait_until_appear(enter_button, wait_time=5):
+            logger.warning('Shikigami records entry not found, skip switching souls')
+            return
+        self.ui_click_until_disappear(enter_button, interval=1)
+        if not self.wait_until_appear(self.O_CHECK_RECORDS_TITLE, wait_time=10):
+            logger.warning('Shikigami records page did not appear, skip switching souls')
+            return
         if enable_by_name:
             group, team = getattr(conf, f"{self.climb_type}_group_team_name").split(",")
             self.run_switch_soul_by_name(group, team)

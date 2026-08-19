@@ -2,11 +2,11 @@
   {
     "itemName": "shi",
     "imageName": "as_shi.png",
-    "roiFront": "1187,384,42,44",
-    "roiBack": "1164,134,83,393",
+    "roiFront": "1193,381,31,35",
+    "roiBack": "1155,115,98,473",
     "method": "Template matching",
-    "threshold": 0.7,
-    "description": "进入活动"
+    "threshold": 0.8,
+    "description": "庭院进入活动入口"
   },
   {
     "itemName": "back_green",
@@ -37,12 +37,12 @@
   },
   {
     "itemName": "to_battle_main",
-    "imageName": "as_to_battle_main.png",
-    "roiFront": "1043,176,34,132",
-    "roiBack": "1000,115,120,270",
+    "imageName": "as_as_check_battle_boss.png",
+    "roiFront": "603,412,28,122",
+    "roiBack": "593,397,50,169",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "进入主要的战斗界面"
+    "description": "进入当前活动爬塔战斗界面"
   },
   {
     "itemName": "to_battle_boss",

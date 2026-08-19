@@ -124,5 +124,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "魇兽将的战斗图片"
+  },
+  {
+    "itemName": "shishenlu",
+    "imageName": "fire_shishenlu.png",
+    "roiFront": "997,559,45,46",
+    "roiBack": "964,533,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "战斗准备界面的式神录入口"
   }
 ]
