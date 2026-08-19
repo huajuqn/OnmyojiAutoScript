@@ -171,6 +171,11 @@ class ScriptTask(GameUi, GeneralBattle, DemonEncounterAssets, SwitchSoul):
             self.screenshot()
             if self.appear(self.I_BOSS_DONE_CHECK):
                 break
+            if self.best_demon_enable and self.appear(self.I_ENTER_FIRE):
+                self._enter_best_demon_battle()
+                # Refresh after handling the button. The prepare/battle flow
+                # must never continue from the same stale screenshot.
+                continue
             if self.appear(self.I_BOSS_GATHER):
                 self.device.stuck_record_clear()
                 self.device.stuck_record_add('BATTLE_STATUS_S')
@@ -212,6 +217,29 @@ class ScriptTask(GameUi, GeneralBattle, DemonEncounterAssets, SwitchSoul):
             if self.appear_then_click(self.I_BOSS_BACK_WHITE, interval=1):
                 continue
         # 返回到封魔主界面
+
+    def _enter_best_demon_battle(self) -> bool:
+        """Click the entry button and confirm that it has really disappeared."""
+        logger.info('Best demon entry button appeared, entering battle')
+        if not self.appear_then_click(self.I_ENTER_FIRE, interval=0.8):
+            return False
+
+        retry_warning = Timer(15).start()
+        disappear_count = 0
+        while True:
+            self.screenshot()
+            if self.appear(self.I_ENTER_FIRE):
+                disappear_count = 0
+                self.appear_then_click(self.I_ENTER_FIRE, interval=0.8)
+                if retry_warning.reached():
+                    logger.warning('Best demon entry button is still present, keep retrying')
+                    retry_warning.reset()
+                continue
+
+            disappear_count += 1
+            if disappear_count >= 3:
+                logger.info('Best demon entry button disappeared')
+                return True
 
     def execute_lantern(self):
         """

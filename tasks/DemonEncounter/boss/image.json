@@ -151,5 +151,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "战斗结束标识，左下角有战绩按钮"
+  },
+  {
+    "itemName": "enter_fire",
+    "imageName": "boss_enter_fire.png",
+    "roiFront": "604,470,77,61",
+    "roiBack": "591,451,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "极逢魔进入战斗按钮"
   }
 ]

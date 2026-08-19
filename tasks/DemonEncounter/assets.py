@@ -50,6 +50,8 @@ class DemonEncounterAssets:
 	I_BOSS_WAIT = RuleImage(roi_front=(490,50,350,150), roi_back=(490,50,350,150), threshold=0.8, method="Template matching", file="./tasks/DemonEncounter/boss/boss_boss_wait.png")
 	# 战斗结束标识，左下角有战绩按钮 
 	I_BOSS_DONE_CHECK = RuleImage(roi_front=(0,450,100,130), roi_back=(0,450,100,130), threshold=0.8, method="Template matching", file="./tasks/DemonEncounter/boss/boss_boss_done_check.png")
+	# 极逢魔进入战斗按钮 
+	I_ENTER_FIRE = RuleImage(roi_front=(604,470,77,61), roi_back=(591,451,100,100), threshold=0.8, method="Template matching", file="./tasks/DemonEncounter/boss/boss_enter_fire.png")
 
 
 	# Ocr Rule Assets
