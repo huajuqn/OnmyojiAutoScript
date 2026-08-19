@@ -15,6 +15,8 @@ class RuleOcr(Digit, DigitCounter, Duration, Single, Full, Quantity):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if self.mode == OcrMode.DIGITSMALL:
+            self.lang = "en_number"
 
 
     def after_process(self, result):
@@ -22,6 +24,7 @@ class RuleOcr(Digit, DigitCounter, Duration, Single, Full, Quantity):
             case OcrMode.FULL: return Full.after_process(self, result)
             case OcrMode.SINGLE: return Single.after_process(self, result)
             case OcrMode.DIGIT: return Digit.after_process(self, result)
+            case OcrMode.DIGITSMALL: return Digit.after_process(self, result)
             case OcrMode.DIGITCOUNTER: return DigitCounter.after_process(self, result)
             case OcrMode.DURATION: return Duration.after_process(self, result)
             case OcrMode.QUANTITY: return Quantity.after_process(self, result)
@@ -33,6 +36,7 @@ class RuleOcr(Digit, DigitCounter, Duration, Single, Full, Quantity):
             case OcrMode.FULL: return Full.ocr_full(self, image, keyword)
             case OcrMode.SINGLE: return Single.ocr_single(self, image)
             case OcrMode.DIGIT: return Digit.ocr_digit(self, image)
+            case OcrMode.DIGITSMALL: return Digit.ocr_digit(self, image)
             case OcrMode.DIGITCOUNTER: return DigitCounter.ocr_digit_counter(self, image)
             case OcrMode.DURATION: return Duration.ocr_duration(self, image)
             case OcrMode.QUANTITY: return Quantity.ocr_quantity(self, image)
@@ -87,4 +91,3 @@ if __name__ == "__main__":
     )
 
     print(rule.ocr_quantity(image))
-

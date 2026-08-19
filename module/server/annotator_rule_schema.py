@@ -60,7 +60,7 @@ RULE_TYPE_SCHEMAS: OrderedDict[str, dict[str, Any]] = OrderedDict(
                     "label": "mode",
                     "control": "select",
                     "default": "Single",
-                    "options": ["Single", "Full", "Digit", "DigitCounter", "Duration", "Quantity"],
+                    "options": ["Single", "Full", "Digit", "DigitSmall", "DigitCounter", "Duration", "Quantity"],
                 },
                 {"key": "method", "label": "method", "control": "text", "default": "Default"},
                 {"key": "keyword", "label": "keyword", "control": "text", "default": ""},

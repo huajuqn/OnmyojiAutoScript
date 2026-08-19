@@ -41,6 +41,7 @@ class OcrMode(Enum):
     DIGITCOUNTER = 4  # str: "DigitCounter"
     DURATION = 5  # str: "Duration"
     QUANTITY = 6  # str: "Quantity"
+    DIGITSMALL = 7  # str: "DigitSmall"，使用独立英文数字小模型
 
 class OcrMethod(Enum):
     DEFAULT = 1  # str: "Default"
@@ -163,7 +164,7 @@ class BaseCor:
         if score >= self.score:
             pass
         elif score >= self.min_score and contains_digit and self.mode in [OcrMode.DIGIT, OcrMode.DIGITCOUNTER,
-                                                                          OcrMode.QUANTITY]:
+                                                                          OcrMode.QUANTITY, OcrMode.DIGITSMALL]:
             logger.warning(
                 f'[{self.name}] Score {score:.2f} is low, but result "{result}" contains a digit. Accepting it.')
             print(f'能保留')

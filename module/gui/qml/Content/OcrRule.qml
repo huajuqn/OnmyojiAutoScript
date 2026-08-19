@@ -179,7 +179,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
                     width: 200
-                    model: ["Single", "Full", "Digit", "DigitCounter", "Duration"]
+                    model: ["Single", "Full", "Digit", "DigitSmall", "DigitCounter", "Duration", "Quantity"]
                     currentIndex: if(typeof ruleFile.currentItem !== "undefined"){
                                      if(ruleFile.currentItem.mode === "Single"){
                                          return 0
@@ -187,10 +187,14 @@ Item {
                                          return 1
                                      }else if(ruleFile.currentItem.mode === "Digit"){
                                          return 2
-                                     }else if(ruleFile.currentItem.mode === "DigitCounter"){
+                                     }else if(ruleFile.currentItem.mode === "DigitSmall"){
                                          return 3
-                                     }else if(ruleFile.currentItem.mode === "Duration"){
+                                     }else if(ruleFile.currentItem.mode === "DigitCounter"){
                                          return 4
+                                     }else if(ruleFile.currentItem.mode === "Duration"){
+                                         return 5
+                                     }else if(ruleFile.currentItem.mode === "Quantity"){
+                                         return 6
                                      }
                                   }else{return 0}
                     onActivated: {
@@ -204,10 +208,16 @@ Item {
                             ruleFile.currentItem.mode = "Digit"
                         }
                         else if(currentIndex === 3){
-                            ruleFile.currentItem.mode = "DigitCounter"
+                            ruleFile.currentItem.mode = "DigitSmall"
                         }
                         else if(currentIndex === 4){
+                            ruleFile.currentItem.mode = "DigitCounter"
+                        }
+                        else if(currentIndex === 5){
                             ruleFile.currentItem.mode = "Duration"
+                        }
+                        else if(currentIndex === 6){
+                            ruleFile.currentItem.mode = "Quantity"
                         }
                     }
                 }

@@ -568,6 +568,8 @@ class BaseTask(GlobalGameAssets, CostumeBase):
                 appear = result == target.keyword
             case OcrMode.DIGIT:
                 appear = result == int(target.keyword)
+            case OcrMode.DIGITSMALL:
+                appear = result == int(target.keyword)
             case OcrMode.DIGITCOUNTER:
                 appear = result == target.ocr_str_digit_counter(target.keyword)
             case OcrMode.DURATION:
