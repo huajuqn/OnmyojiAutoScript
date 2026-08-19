@@ -147,6 +147,44 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
     更新前请先看 ./README.md
     """
 
+    def _handle_daily_supply(self, skip_first_screenshot: bool = True) -> bool:
+        """处理每日进入活动时连续出现的补给与奖励弹窗。"""
+        self.maybe_screenshot(skip_first_screenshot)
+        handled = False
+
+        if self.appear(self.I_DAYLY_REWARD):
+            logger.hr('Handle daily activity supply', 2)
+            while self.appear(self.I_DAYLY_REWARD):
+                self.random_reward_click()
+                self.screenshot()
+            handled = True
+
+            # 奖励动画结束后才会出现补给总览的关闭按钮。
+            wait_exit = Timer(5).start()
+            while not wait_exit.reached() and not self.appear(self.I_RED_EXIT2):
+                self.screenshot()
+
+        if self.appear(self.I_RED_EXIT2):
+            self.ui_click_until_disappear(self.I_RED_EXIT2, interval=1)
+            handled = True
+
+        if handled:
+            # 弹窗消失不代表主页动画已经稳定；在此期间禁止通用未知页逻辑点击左上返回。
+            self.wait_until_appear(
+                self.I_TO_BATTLE_MAIN,
+                skip_first_screenshot=True,
+                wait_time=5
+            )
+
+        return handled
+
+    def try_close_unknown_page(self, skip_screenshot: bool = True):
+        """让页面导航也能识别并处理遮挡活动主页的每日补给弹窗。"""
+        if self._handle_daily_supply(skip_first_screenshot=skip_screenshot):
+            logger.info('Daily activity supply popup handled')
+            return True
+        return super().try_close_unknown_page(skip_screenshot=True)
+
     def run(self) -> None:
         self.limit_time: timedelta = self.conf.general_climb.limit_time_v
         #
@@ -154,6 +192,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             # 进入到活动的主页面，不是具体的战斗页面
             self.ui_get_current_page()
             self.ui_goto(game.page_climb_act)
+            self._handle_daily_supply(skip_first_screenshot=False)
             try:
                 method_func = getattr(self, f'_run_{climb_type}')
                 method_func()

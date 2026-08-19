@@ -59,6 +59,10 @@ class ActivityShikigamiAssets:
 	I_TO_BATTLE_MAIN_2 = RuleImage(roi_front=(15,94,247,38), roi_back=(2,68,311,100), threshold=0.65, method="Template matching", file="./tasks/ActivityShikigami/as/as_to_battle_main_2.png")
 	# 确认跳过 
 	I_CONFIRM_SKIP = RuleImage(roi_front=(707,442,137,38), roi_back=(656,397,231,124), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_confirm_skip.png")
+	# 每日奖励弹窗 
+	I_DAYLY_REWARD = RuleImage(roi_front=(477,246,106,34), roi_back=(464,229,140,77), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_dayly_reward.png")
+	# 红色退出2，每日补给关闭界面 
+	I_RED_EXIT2 = RuleImage(roi_front=(1106,190,29,27), roi_back=(1061,152,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_red_exit2.png")
 
 
 	# Image Rule Assets

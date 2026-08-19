@@ -97,5 +97,23 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "确认跳过"
+  },
+  {
+    "itemName": "dayly_reward",
+    "imageName": "as_dayly_reward.png",
+    "roiFront": "477,246,106,34",
+    "roiBack": "464,229,140,77",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "每日奖励弹窗"
+  },
+  {
+    "itemName": "red_exit2",
+    "imageName": "as_red_exit2.png",
+    "roiFront": "1106,190,29,27",
+    "roiBack": "1061,152,100,100",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "红色退出2，每日补给关闭界面"
   }
 ]
