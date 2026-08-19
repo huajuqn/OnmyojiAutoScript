@@ -35,6 +35,10 @@ def check_soul_by_ocr(enable_switch: bool, group_team: str, label: str):
         raise ValueError(f"[{label}]The length of the switch soul configuration must be equal to 2")
 
 
+class ActivityClimbConfig(GeneralClimb):
+    prefer_timesx5: bool = Field(default=False, description='是否优先使用5倍挑战')
+
+
 class SwitchSoulConfig(BaseModel):
     enable_switch_pass: bool = Field(default=False, description='是否切换门票爬塔御魂')
     pass_group_team: str = Field(default='-1,-1', description='组1-7,队伍1-4 中间用英文,分隔')
@@ -98,7 +102,7 @@ class GeneralBattleConfig(BaseModel):
 
 class ActivityShikigami(ConfigBase):
     scheduler: Scheduler = Field(default_factory=Scheduler)
-    general_climb: GeneralClimb = Field(default_factory=GeneralClimb)
+    general_climb: ActivityClimbConfig = Field(default_factory=ActivityClimbConfig)
     switch_soul_config: SwitchSoulConfig = Field(default_factory=SwitchSoulConfig)
     general_battle: GeneralBattleConfig = Field(default_factory=GeneralBattleConfig)
 

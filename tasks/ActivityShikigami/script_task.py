@@ -203,9 +203,11 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 continue
             #  --------------------------------------------------------------
             self.lock_team(self.conf.general_battle)
-            if not self.check_tickets_enough():
+            remain_tickets = self.check_tickets_enough()
+            if remain_tickets <= 0:
                 logger.warning(f'No tickets left, wait for next time')
                 break
+            self.switch_timesx5(remain_tickets)
             if self.conf.general_climb.random_sleep:
                 random_sleep(probability=0.2)
             if self.start_battle():
@@ -322,9 +324,10 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             # 战斗成功
             if self.appear_then_click(self.I_WIN, interval=2):
                 continue
-            #  出现 “魂” 和 紫蛇皮
+            # 出现奖励标识，或战利品总览提示“点击屏幕继续”
             if self.appear(self.I_REWARD) or self.appear(self.I_REWARD_PURPLE_SNAKE_SKIN) or \
-                    self.appear(self.I_REWARD_GOLD) or self.appear(self.I_REWARD_GOLD_SNAKE_SKIN):
+                    self.appear(self.I_REWARD_GOLD) or self.appear(self.I_REWARD_GOLD_SNAKE_SKIN) or \
+                    self.appear(self.O_CONTINUE_CLICK):
                 self.random_reward_click(exclude_click=[self.C_RANDOM_TOP, self.C_RANDOM_LEFT])
                 ok_cnt += 1
                 continue
@@ -387,15 +390,15 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         logger.info(f'Unlock {self.climb_type} team')
         self.ui_click(self.I_LOCK, stop=self.I_UNLOCK, interval=1.5)
 
-    def check_tickets_enough(self) -> bool:
+    def check_tickets_enough(self) -> int:
         """
         判断当前爬塔门票是否足够
-        :return: True 可以运行 or False
+        :return: 当前爬塔类型的剩余门票数量
         """
         logger.hr(f'Check {self.climb_type} tickets')
         if not self.wait_until_appear(self.I_FIRE_BUTTON, wait_time=3):
             logger.warning(f'Detect fire fail, try reidentify')
-            return False
+            return 0
         self.screenshot()
         remain_times = 0
         if self.climb_type == 'pass':
@@ -406,7 +409,27 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             _, remain_times, _ = self.O_REMAIN_BOSS.ocr_digit_counter(self.device.image)
         if self.climb_type == 'ap100':
             remain_times = self.O_REMAIN_AP100.ocr_digit(self.device.image)
-        return remain_times > 0
+        return remain_times
+
+    def switch_timesx5(self, remain_tickets: int) -> bool:
+        """根据配置、5倍挑战券和活动门票数量切换5倍挑战。"""
+        remain_timesx5 = self.O_REMAIN_TIMESX5.ocr_digit(self.device.image)
+        prefer_timesx5 = self.conf.general_climb.prefer_timesx5
+        enable_timesx5 = prefer_timesx5 and remain_timesx5 > 0 and remain_tickets - 5 >= 0
+        logger.info(
+            f'5x challenge decision: prefer={prefer_timesx5}, '
+            f'coupons={remain_timesx5}, tickets={remain_tickets}, enable={enable_timesx5}'
+        )
+
+        target = self.I_TIMESX5_TRUE if enable_timesx5 else self.I_TIMESX5_FALSE
+        if self.appear(target):
+            return True
+
+        current = self.I_TIMESX5_FALSE if enable_timesx5 else self.I_TIMESX5_TRUE
+        if not self.appear(current):
+            logger.warning('Cannot identify current 5x challenge state')
+            return False
+        return self.ui_click(current, stop=target, interval=1, timeout=5)
 
     def get_general_battle_conf(self) -> tasks.Component.GeneralBattle.config_general_battle.GeneralBattleConfig:
         from tasks.Component.GeneralBattle.config_general_battle import GeneralBattleConfig as gbc

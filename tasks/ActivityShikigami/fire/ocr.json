@@ -19,9 +19,9 @@
   },
   {
     "itemName": "remain_pass",
-    "roiFront": "532,26,86,25",
-    "roiBack": "480,220,92,32",
-    "mode": "Digit",
+    "roiFront": "540,26,77,27",
+    "roiBack": "1043,177,92,20",
+    "mode": "DigitSmall",
     "method": "Default",
     "keyword": "",
     "description": "活动体力的剩余检测"
@@ -37,8 +37,8 @@
   },
   {
     "itemName": "remain_pass2",
-    "roiFront": "722,25,88,29",
-    "roiBack": "715,21,108,38",
+    "roiFront": "731,25,76,27",
+    "roiBack": "629,97,77,38",
     "mode": "Digit",
     "method": "Default",
     "keyword": "",
@@ -70,5 +70,23 @@
     "method": "Default",
     "keyword": "将魂试炼",
     "description": "进入100体活动标识"
+  },
+  {
+    "itemName": "continue_click",
+    "roiFront": "544,672,195,43",
+    "roiBack": "0,0,100,100",
+    "mode": "Single",
+    "method": "Default",
+    "keyword": "点击屏幕继续",
+    "description": "继续点击屏幕"
+  },
+  {
+    "itemName": "remain_timesx5",
+    "roiFront": "746,29,64,23",
+    "roiBack": "0,0,100,100",
+    "mode": "DigitSmall",
+    "method": "Default",
+    "keyword": "",
+    "description": "剩余5倍次数"
   }
 ]

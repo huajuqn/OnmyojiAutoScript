@@ -92,6 +92,10 @@ class ActivityShikigamiAssets:
 	I_PASS_13 = RuleImage(roi_front=(1018,570,100,100), roi_back=(984,538,169,152), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_pass_13.png")
 	# 战斗准备界面的式神录入口 
 	I_SHISHENLU = RuleImage(roi_front=(997,559,45,46), roi_back=(964,533,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_shishenlu.png")
+	# 5倍挑战开启 
+	I_TIMESX5_TRUE = RuleImage(roi_front=(845,646,44,47), roi_back=(832,628,69,80), threshold=0.9, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_timesx5_ture.png")
+	# 5倍挑战关闭 
+	I_TIMESX5_FALSE = RuleImage(roi_front=(840,642,52,50), roi_back=(814,619,100,100), threshold=0.9, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_timesx5_false.png")
 
 
 	# Ocr Rule Assets
@@ -100,16 +104,20 @@ class ActivityShikigamiAssets:
 	# 体力的数量检测 
 	O_REMAIN_AP = RuleOcr(roi=(1126,23,90,33), area=(1106,23,134,33), mode="Quantity", method="Default", keyword="", name="remain_ap")
 	# 活动体力的剩余检测 
-	O_REMAIN_PASS = RuleOcr(roi=(532,26,86,25), area=(480,220,92,32), mode="Digit", method="Default", keyword="", name="remain_pass")
+	O_REMAIN_PASS = RuleOcr(roi=(540,26,77,27), area=(1043,177,92,20), mode="DigitSmall", method="Default", keyword="", name="remain_pass")
 	# 还有多少次购买体力的机会 
 	O_REMAIN_BUY = RuleOcr(roi=(808,531,39,42), area=(808,531,39,42), mode="DigitCounter", method="Default", keyword="", name="remain_buy")
 	# 活动票数（没有百分比） 
-	O_REMAIN_PASS2 = RuleOcr(roi=(722,25,88,29), area=(715,21,108,38), mode="Digit", method="Default", keyword="", name="remain_pass2")
+	O_REMAIN_PASS2 = RuleOcr(roi=(731,25,76,27), area=(629,97,77,38), mode="Digit", method="Default", keyword="", name="remain_pass2")
 	# boss剩余攻击次数 
 	O_REMAIN_BOSS = RuleOcr(roi=(1113,669,131,31), area=(1099,659,162,52), mode="DigitCounter", method="Default", keyword="", name="remain_boss")
 	# 100体活动门票检测 
 	O_REMAIN_AP100 = RuleOcr(roi=(927,28,100,25), area=(906,22,125,36), mode="Digit", method="Default", keyword="", name="remain_ap100")
 	# 进入100体活动标识 
 	O_ENTER_AP100 = RuleOcr(roi=(73,98,95,32), area=(5,79,256,108), mode="Single", method="Default", keyword="将魂试炼", name="enter_ap100")
+	# 继续点击屏幕 
+	O_CONTINUE_CLICK = RuleOcr(roi=(544,672,195,43), area=(0,0,100,100), mode="Single", method="Default", keyword="点击屏幕继续", name="continue_click")
+	# 剩余5倍次数 
+	O_REMAIN_TIMESX5 = RuleOcr(roi=(746,29,64,23), area=(0,0,100,100), mode="DigitSmall", method="Default", keyword="", name="remain_timesx5")
 
 

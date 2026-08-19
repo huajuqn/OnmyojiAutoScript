@@ -133,5 +133,23 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "战斗准备界面的式神录入口"
+  },
+  {
+    "itemName": "timesx5_true",
+    "imageName": "fire_timesx5_ture.png",
+    "roiFront": "845,646,44,47",
+    "roiBack": "832,628,69,80",
+    "method": "Template matching",
+    "threshold": 0.9,
+    "description": "5倍挑战开启"
+  },
+  {
+    "itemName": "timesx5_false",
+    "imageName": "fire_timesx5_false.png",
+    "roiFront": "840,642,52,50",
+    "roiBack": "814,619,100,100",
+    "method": "Template matching",
+    "threshold": 0.9,
+    "description": "5倍挑战关闭"
   }
 ]
