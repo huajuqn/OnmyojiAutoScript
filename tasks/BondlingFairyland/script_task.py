@@ -468,22 +468,47 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         except KeyError as exc:
             raise ValueError(f'Invalid bondling catch mode: {mode}') from exc
 
-    def has_plate(self, bondling_config: BondlingConfig, retry: int = 3) -> bool | None:
-        """检查当前策略的式盘；None 表示连续 OCR 失败。"""
+    def has_plate(self, bondling_config: BondlingConfig, retry: int = 6,
+                  required_matches: int = 2) -> bool | None:
+        """
+        多帧检查当前策略的式盘。
+
+        战斗奖励关闭后的资源栏仍可能处于刷新动画，单帧会把 ``40/200``
+        识别成 ``0/200``。正数达到稳定次数即可通过；零值必须完成全部重试后
+        才能确认，避免瞬时零直接结束任务。None 表示没有得到稳定结果。
+        """
         target = self.get_plate_ocr_target(bondling_config.bondling_mode)
+        readings = {}
+        zero_required_matches = max(required_matches, retry // 2 + 1)
         for attempt in range(retry):
             self.screenshot()
             current, remain, total = target.ocr(self.device.image)
             if total > 0 and 0 <= current <= total:
-                logger.info(f'Plate count: {current}/{total}')
-                if current <= 0:
-                    logger.warning('No plate number, exit')
-                    return False
-                return True
-            logger.warning(f'Invalid plate OCR result: {(current, remain, total)}, '
-                           f'attempt: {attempt + 1}/{retry}')
+                reading = (current, total)
+                readings[reading] = readings.get(reading, 0) + 1
+                logger.info(f'Plate OCR candidate: {current}/{total}, '
+                            f'matches: {readings[reading]}/{required_matches}, '
+                            f'attempt: {attempt + 1}/{retry}')
+                if current > 0 and readings[reading] >= required_matches:
+                    logger.info(f'Plate count confirmed: {current}/{total}')
+                    return True
+            else:
+                logger.warning(f'Invalid plate OCR result: {(current, remain, total)}, '
+                               f'attempt: {attempt + 1}/{retry}')
             if attempt < retry - 1:
                 sleep(0.3)
+
+        zero_readings = [
+            (current, total, matches)
+            for (current, total), matches in readings.items()
+            if current == 0 and matches >= zero_required_matches
+        ]
+        if zero_readings:
+            _, total, matches = max(zero_readings, key=lambda item: item[2])
+            logger.warning(f'Plate count confirmed empty: 0/{total}, matches: {matches}')
+            return False
+
+        logger.warning(f'Unstable plate OCR results: {readings}')
         return None
 
     def acquire_target(self, bondling_config: BondlingConfig, target_index: int,
