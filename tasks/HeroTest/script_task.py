@@ -14,7 +14,7 @@ from tasks.Component.GeneralBattle.general_battle import GeneralBattle
 from tasks.HeroTest.assets import HeroTestAssets
 from tasks.GameUi.game_ui import GameUi
 from tasks.Component.SwitchSoul.switch_soul import SwitchSoul
-from tasks.HeroTest.config import Layer, HeroTest, SkillMode
+from tasks.HeroTest.config import Layer, HeroTest
 
 
 
@@ -121,6 +121,17 @@ class ScriptTask(GameUi, GeneralBattle, HeroTestAssets, SwitchSoul):
 
     def hero1_skill_wait(self):
         if self.wait_until_appear(self.I_BCMJ_SKILL_ADD_CONFIRM, wait_time=2):
+            skill_assets = {
+                '八华斩': self.I_BCMJ_SKILL_ADD1,
+                '无畏': self.I_BCMJ_SKILL_ADD2,
+                '暴击伤害': self.I_BCMJ_PROPERTY_ADD_CRITICAL,
+                '默认祝福': self.I_BCMJ_BLESS,
+                '默认属性': self.I_BCMJ__DEFALUT_ATTRIBUTE,
+            }
+            target_skills = [
+                skill_assets[name]
+                for name in self.conf.herotest.skill_priority(Layer.MIJING)
+            ]
             timer = Timer(10).start()
             while 1:
                 self.screenshot()
@@ -133,19 +144,7 @@ class ScriptTask(GameUi, GeneralBattle, HeroTestAssets, SwitchSoul):
                     logger.warning('Skill selection panel closed unexpectedly, exit')
                     break
 
-                if self.appear_then_click(self.I_BCMJ_SKILL_ADD1, interval=1):
-                    break
-                if self.appear_then_click(self.I_BCMJ_SKILL_ADD2, interval=1):
-                    break
-                if self.appear_then_click(self.I_BCMJ_BLESS, interval=1):
-                    break
-                if self.appear_then_click(
-                        self.I_BCMJ_PROPERTY_ADD_CRITICAL, interval=1
-                ):
-                    break
-                if self.appear_then_click(
-                        self.I_BCMJ__DEFALUT_ATTRIBUTE, interval=1
-                ):
+                if any(self.appear_then_click(skill, interval=1) for skill in target_skills):
                     break
             if self.appear_then_click(self.I_BCMJ_SKILL_ADD_CONFIRM, interval=1):
                 return True
@@ -154,22 +153,18 @@ class ScriptTask(GameUi, GeneralBattle, HeroTestAssets, SwitchSoul):
     def hero2_skill_wait(self):
         if not self.appear(self.I_BCMJ_SKILL_ADD_CONFIRM):
             return False
-        # pve技能列表, 按优先级顺序
-        pve_skill = [
-            self.I_HERO2_SKILL1,  # 同调祝福
-            self.I_HERO2_SKILL2,  # 韵迟祝福
-            self.I_HERO2_SKILL3,  # 弥天祝福
-            self.I_HERO2_SKILL4,  # 叠辉祝福
-            self.I_HERO2_SKILL5,  # 敛神祝福
-            self.I_HERO2_SKILL6,  # 速度祝福
-        ]
-        # TODO: PVP
-        pvp_skill = []
-        target_skill_dict: dict[SkillMode, list] = {
-            SkillMode.PVE: pve_skill,
-            SkillMode.PVP: pvp_skill,
+        skill_assets = {
+            '同调祝福': self.I_HERO2_SKILL1,
+            '韵迟祝福': self.I_HERO2_SKILL2,
+            '弥天祝福': self.I_HERO2_SKILL3,
+            '叠辉祝福': self.I_HERO2_SKILL4,
+            '敛神祝福': self.I_HERO2_SKILL5,
+            '速度祝福': self.I_HERO2_SKILL6,
         }
-        target_skills = target_skill_dict[self.conf.herotest.skill_mode]
+        target_skills = [
+            skill_assets[name]
+            for name in self.conf.herotest.skill_priority(Layer.MENGXU)
+        ]
         while True:
             self.screenshot()
             if any(self.appear_then_click(ts, interval=1) for ts in target_skills):
