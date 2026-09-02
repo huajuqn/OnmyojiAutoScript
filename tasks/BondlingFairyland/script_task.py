@@ -63,6 +63,8 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         self.current_count = 0
         self.limit_count = bondling_config.limit_count  # 默认limit_count值
         self._bondling_soul_stage = None
+        # 按式盘类型记录最近一次可信数量及当时的战斗次数，用于排除 70→0 等漏识别十位的结果。
+        self._plate_count_state = {}
         logger.hr('Goto bondling area')
         self.goto_ball_area(BondlingClass.get_index(bondling_config.bondling_stone_class))
 
@@ -471,27 +473,65 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
     def has_plate(self, bondling_config: BondlingConfig, retry: int = 6,
                   required_matches: int = 2) -> bool | None:
         """
-        多帧检查当前策略的式盘。
+        在契灵战斗界面多帧检查当前策略的式盘。
 
-        战斗奖励关闭后的资源栏仍可能处于刷新动画，单帧会把 ``40/200``
-        识别成 ``0/200``。正数达到稳定次数即可通过；零值必须完成全部重试后
-        才能确认，避免瞬时零直接结束任务。None 表示没有得到稳定结果。
+        只有确认挑战按钮存在时才允许 OCR，避免在结算动画或其他页面读取同一
+        坐标。OCR 偶尔会漏掉十位（如 ``72/200`` 识别为 ``2/200``），因此
+        结合最近可信数量和经过的战斗次数排除不可能的骤降。None 表示没有在
+        正确页面得到稳定结果。
         """
+        mode = bondling_config.bondling_mode
+        if not hasattr(self, '_plate_count_state'):
+            self._plate_count_state = {}
         target = self.get_plate_ocr_target(bondling_config.bondling_mode)
         readings = {}
         zero_required_matches = max(required_matches, retry // 2 + 1)
+
+        # 低级式盘每轮最多消耗 1 个；中/高级式盘的连续结契最多进行 10 次。
+        max_consumption_per_battle = {
+            BondlingMode.MODE2: 1,
+            BondlingMode.MODE3: 10,
+            BondlingMode.MODE4: 10,
+        }[mode]
+
+        def cached_lower_bound() -> int | None:
+            state = self._plate_count_state.get(mode)
+            if state is None:
+                return None
+            cached_count, cached_battle_count = state
+            battle_delta = max(0, self.current_count - cached_battle_count)
+            return max(0, cached_count - battle_delta * max_consumption_per_battle)
+
+        def confirm_positive(current: int, total: int) -> bool:
+            lower_bound = cached_lower_bound()
+            if lower_bound is not None and current < lower_bound:
+                logger.warning(
+                    f'Ignore implausible plate drop: {current}/{total}, '
+                    f'expected at least {lower_bound}/{total}'
+                )
+                # 最近可信数量证明仍有式盘；只忽略错误读数，不提前结束任务。
+                return True
+            self._plate_count_state[mode] = (current, self.current_count)
+            logger.info(f'Plate count confirmed: {current}/{total}')
+            return True
+
         for attempt in range(retry):
             self.screenshot()
+            if not self.in_catch_ui():
+                logger.warning(f'Skip plate OCR outside catch UI, attempt: {attempt + 1}/{retry}')
+                if attempt < retry - 1:
+                    sleep(0.3)
+                continue
+
             current, remain, total = target.ocr(self.device.image)
-            if total > 0 and 0 <= current <= total:
+            if total == 200 and 0 <= current <= total and current + remain == total:
                 reading = (current, total)
                 readings[reading] = readings.get(reading, 0) + 1
                 logger.info(f'Plate OCR candidate: {current}/{total}, '
                             f'matches: {readings[reading]}/{required_matches}, '
                             f'attempt: {attempt + 1}/{retry}')
                 if current > 0 and readings[reading] >= required_matches:
-                    logger.info(f'Plate count confirmed: {current}/{total}')
-                    return True
+                    return confirm_positive(current, total)
             else:
                 logger.warning(f'Invalid plate OCR result: {(current, remain, total)}, '
                                f'attempt: {attempt + 1}/{retry}')
@@ -505,6 +545,13 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         ]
         if zero_readings:
             _, total, matches = max(zero_readings, key=lambda item: item[2])
+            lower_bound = cached_lower_bound()
+            if lower_bound is not None and lower_bound > 0:
+                logger.warning(
+                    f'Ignore false empty plate OCR: 0/{total}, '
+                    f'expected at least {lower_bound}/{total}, matches: {matches}'
+                )
+                return True
             logger.warning(f'Plate count confirmed empty: 0/{total}, matches: {matches}')
             return False
 
@@ -683,13 +730,6 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 return False
             return True
 
-        # 检查盘子
-        if self.has_plate(bondling_config) is not True:
-            return CatchResult.STOPPED
-        # 检查抓捕契灵剩余数量
-        if not check_ball_number():
-            return CatchResult.STOPPED
-
         # 开始执行循环
         logger.hr(f'开始执行战斗循环', 2)
         ui_wait_timer = Timer(20).start()
@@ -707,9 +747,11 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
                 continue
             ui_wait_timer.reset()
 
-            # 检查是否有盘子
+            # 已确认处于契灵战斗界面后，才允许识别式盘和剩余捕捉次数。
             if self.has_plate(bondling_config) is not True:
                 logger.warning(f'No plate number, exit')
+                return CatchResult.STOPPED
+            if not check_ball_number():
                 return CatchResult.STOPPED
             # 检查是否有挑战次数
             if self.current_count >= bondling_config.limit_count:
