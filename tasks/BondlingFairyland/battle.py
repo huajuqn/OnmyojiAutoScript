@@ -66,7 +66,8 @@ class BondlingBattle(GeneralBattle, BondlingFairylandAssets):
         logger.info("Start battle process")
         win: bool = False
         bondling_mode = self.config.bondling_fairyland.bondling_config.bondling_mode
-        cap_again = bondling_mode in [BondlingMode.MODE3, BondlingMode.MODE4]
+        # 低/中级式盘失败后均放弃本轮并重新挑战；仅高级式盘连续结契。
+        cap_again = bondling_mode == BondlingMode.MODE4
         cap_cnt, max_cap = 0, 10
         while 1:
             # 捕获次数超过最大次数限制, 则不再进行捕获

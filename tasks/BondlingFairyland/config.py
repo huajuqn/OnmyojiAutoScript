@@ -57,7 +57,8 @@ class BondlingConfig(ConfigBase):
     bondling_mode: BondlingMode = Field(default=BondlingMode.MODE1,
                                         description='只刷探查:只执行探查(仅限单刷)\n'
                                                     '低级式盘:自动切换非连续,非羁绊\n'
-                                                    '中级式盘:自动切换连续,羁绊\n'
+                                                    '中级式盘:自动切换非连续,非羁绊\n'
+                                                    '高级式盘:自动连续结契\n'
                                                     '刷契灵时可通过“没有契灵时自动探查”开启循环探查')
     limit_time: Time = Field(default=Time(minute=30), description='limit_time_help')
     limit_count: int = Field(default=30, description='limit_count_help')

@@ -487,10 +487,10 @@ class ScriptTask(GameUi, GeneralInvite, GeneralRoom, BondlingBattle, SwitchSoul,
         readings = {}
         zero_required_matches = max(required_matches, retry // 2 + 1)
 
-        # 低级式盘每轮最多消耗 1 个；中/高级式盘的连续结契最多进行 10 次。
+        # 低/中级式盘每轮最多消耗 1 个；高级式盘的连续结契最多进行 10 次。
         max_consumption_per_battle = {
             BondlingMode.MODE2: 1,
-            BondlingMode.MODE3: 10,
+            BondlingMode.MODE3: 1,
             BondlingMode.MODE4: 10,
         }[mode]
 
