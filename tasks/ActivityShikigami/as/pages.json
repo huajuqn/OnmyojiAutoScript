@@ -2,7 +2,7 @@
   {
     "itemName": "shi",
     "imageName": "as_shi.png",
-    "roiFront": "1193,381,31,35",
+    "roiFront": "1195,222,31,35",
     "roiBack": "1155,115,98,473",
     "method": "Template matching",
     "threshold": 0.8,
@@ -37,9 +37,9 @@
   },
   {
     "itemName": "to_battle_main",
-    "imageName": "as_as_check_battle_boss.png",
-    "roiFront": "603,412,28,122",
-    "roiBack": "593,397,50,169",
+    "imageName": "as_to_battle_main.png",
+    "roiFront": "349,178,50,98",
+    "roiBack": "309,133,103,197",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "进入当前活动爬塔战斗界面"
@@ -56,11 +56,11 @@
   {
     "itemName": "check_battle_main",
     "imageName": "as_check_battle_main.png",
-    "roiFront": "1136,596,90,62",
-    "roiBack": "1095,570,175,135",
+    "roiFront": "153,14,136,44",
+    "roiBack": "134,1,218,92",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "description"
+    "description": "战斗界面识别标志"
   },
   {
     "itemName": "check_battle_boss",
@@ -87,7 +87,7 @@
     "roiBack": "2,68,311,100",
     "method": "Template matching",
     "threshold": 0.65,
-    "description": "description"
+    "description": "从战斗界面，进入挑战的入口"
   },
   {
     "itemName": "confirm_skip",
@@ -115,5 +115,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "红色退出2，每日补给关闭界面"
+  },
+  {
+    "itemName": "battle_fire_main",
+    "imageName": "as_battle_fire_main.png",
+    "roiFront": "148,16,139,42",
+    "roiBack": "0,0,409,96",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "description"
   }
 ]

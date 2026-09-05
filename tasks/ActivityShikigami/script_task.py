@@ -15,7 +15,7 @@ from module.atom.click import RuleClick
 from module.atom.ocr import RuleOcr
 from module.base.protect import random_sleep
 from module.base.timer import Timer
-from module.exception import TaskEnd
+from module.exception import GameStuckError, TaskEnd
 from module.logger import logger
 
 from tasks.base_task import BaseTask
@@ -218,8 +218,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             更新前请先看 ./README.md
         """
         logger.hr(f'Start run climb type PASS', 1)
-        self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
-                       stop=self.I_FIRE_BUTTON, interval=1)
+        self.enter_climb_challenge()
         self.switch_soul(self.I_SHISHENLU, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('pass')
 
@@ -227,7 +226,6 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         click_limit_timer = Timer(4).start()
         while 1:
             self.screenshot()
-            self.switch_climb_mode_in_game(self.climb_type)
             self.put_status()
             # --------------------------------------------------------------
             if (self.appear_then_click(self.I_UI_CONFIRM, interval=0.5)
@@ -240,13 +238,15 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             ocr_limit_timer.reset()
             if not self.appear(self.I_FIRE_BUTTON):
                 continue
+            self.switch_climb_mode_in_game(self.climb_type)
             #  --------------------------------------------------------------
             self.lock_team(self.conf.general_battle)
             remain_tickets = self.check_tickets_enough()
             if remain_tickets <= 0:
                 logger.warning(f'No tickets left, wait for next time')
                 break
-            self.switch_timesx5(remain_tickets)
+            if not self.switch_timesx5(remain_tickets):
+                raise GameStuckError('活动五倍模式未确认，停止点击挑战')
             if self.conf.general_climb.random_sleep:
                 random_sleep(probability=0.2)
             if self.start_battle():
@@ -259,15 +259,13 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             更新前请先看 ./README.md
         """
         logger.hr(f'Start run climb type AP')
-        self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
-                       stop=self.I_FIRE_BUTTON, interval=1)
+        self.enter_climb_challenge()
         self.switch_soul(self.I_SHISHENLU, self.I_FIRE_BUTTON)
         self.switch_climb_mode_in_game('ap')
 
         ocr_limit_timer = Timer(1).start()
         while 1:
             self.screenshot()
-            self.switch_climb_mode_in_game(self.climb_type)
             self.put_status()
             # --------------------------------------------------------------
             if not ocr_limit_timer.reached():
@@ -275,11 +273,15 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             ocr_limit_timer.reset()
             if not self.appear(self.I_FIRE_BUTTON):
                 continue
+            self.switch_climb_mode_in_game(self.climb_type)
             #  --------------------------------------------------------------
             self.lock_team(self.conf.general_battle)
-            if not self.check_tickets_enough():
+            remain_tickets = self.check_tickets_enough()
+            if remain_tickets <= 0:
                 logger.warning(f'No tickets left, wait for next time')
                 break
+            if self.conf.general_climb.anniversary_timesx5 and not self.switch_timesx5(remain_tickets):
+                raise GameStuckError('体力五倍模式未确认，停止点击挑战')
             if self.conf.general_climb.random_sleep:
                 random_sleep(probability=0.2)
             if self.start_battle():
@@ -407,6 +409,17 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             self.run_switch_soul(group_team)
         self.ui_click(self.I_UI_BACK_YELLOW, stop=cur_img, interval=1)
 
+    def enter_climb_challenge(self):
+        """依次确认新增的战斗主页与挑战页，支持从任一层恢复导航。"""
+        if self.conf.general_climb.anniversary_timesx5:
+            self.ui_get_current_page(False)
+            self.ui_goto(game.page_climb_challenge)
+            if not self.wait_until_appear(self.I_FIRE_BUTTON, wait_time=8):
+                raise GameStuckError('已进入活动挑战页，但未识别到挑战按钮')
+        else:
+            self.ui_clicks([self.I_TO_BATTLE_MAIN, self.I_TO_BATTLE_MAIN_2],
+                           stop=self.I_FIRE_BUTTON, interval=1)
+
     def switch_climb_mode_in_game(self, mode: str = 'ap'):
         map_check = {
             'ap': self.I_CLIMB_MODE_AP,
@@ -414,8 +427,14 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         }
         if self.appear(map_check[mode]):
             return
+        # 困难只支持活动门票；先退回简单，再切换普通体力模式。
+        if (self.conf.general_climb.anniversary_timesx5 and mode == 'ap'
+                and self.appear(self.I_CLIMB_MODE_PASS)):
+            if not self.switch_pass_difficulty(False):
+                raise GameStuckError('切换体力模式前无法确认简单模式')
         logger.info(f'Switch climb mode to {mode}')
-        self.ui_click(self.I_CLIMB_MODE_SWITCH, stop=map_check[mode], interval=1.9)
+        if not self.ui_click(self.I_CLIMB_MODE_SWITCH, stop=map_check[mode], interval=1.9, timeout=10):
+            raise GameStuckError(f'无法确认活动消耗模式: {mode}')
 
     def lock_team(self, battle_conf: GeneralBattleConfig):
         """
@@ -444,6 +463,11 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             remain_times = self.O_REMAIN_PASS.ocr_digit(self.device.image)
         if self.climb_type == 'ap':
             remain_times = self.O_REMAIN_AP.ocr_quantity(self.device.image)
+            if self.conf.general_climb.anniversary_timesx5:
+                normal_tickets = self.O_REMAIN_AP_PASS.ocr(self.device.image)
+                logger.info(f'常规挑战资源: 体力={remain_times}, 门票={normal_tickets}')
+                # AP 每次需要 6 体力和 1 张常规门票，返回可执行的单倍次数。
+                remain_times = min(remain_times // 6, normal_tickets)
         if self.climb_type == 'boss':
             _, remain_times, _ = self.O_REMAIN_BOSS.ocr_digit_counter(self.device.image)
         if self.climb_type == 'ap100':
@@ -452,6 +476,11 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
 
     def switch_timesx5(self, remain_tickets: int) -> bool:
         """根据配置、5倍挑战券和活动门票数量切换5倍挑战。"""
+        if self.conf.general_climb.anniversary_timesx5 and self.climb_type == 'pass':
+            # PASS 免费五倍不消耗五倍券，也不操作 AP 的五倍开关。
+            enable = self.conf.general_climb.prefer_timesx5 and remain_tickets >= 5
+            logger.info(f'周年庆门票模式: 门票={remain_tickets}, 困难五倍={enable}')
+            return self.switch_pass_difficulty(enable)
         remain_timesx5 = self.O_REMAIN_TIMESX5.ocr_digit(self.device.image)
         prefer_timesx5 = self.conf.general_climb.prefer_timesx5
         enable_timesx5 = prefer_timesx5 and remain_timesx5 > 0 and remain_tickets - 5 >= 0
@@ -469,6 +498,29 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             logger.warning('Cannot identify current 5x challenge state')
             return False
         return self.ui_click(current, stop=target, interval=1, timeout=5)
+
+    def switch_pass_difficulty(self, hard: bool) -> bool:
+        """两个难度按钮始终都在；通过实际消耗 1/5 张确认选中状态。"""
+        target_cost = 5 if hard else 1
+        button = self.C_HARD_MODE if hard else self.C_EASY_MODE
+        timer = Timer(10).start()
+        confirmed = 0
+        while not timer.reached():
+            self.screenshot()
+            if not self.appear(self.I_FIRE_BUTTON) or not self.appear(self.I_CLIMB_MODE_PASS):
+                confirmed = 0
+                continue
+            cost = self.O_CHALLENGE_COST.ocr(self.device.image)
+            if cost == target_cost:
+                confirmed += 1
+                if confirmed >= 2:
+                    return True
+                continue
+            confirmed = 0
+            if self.appear(self.I_EASY_MODE) or self.appear(self.I_HARD_MODE):
+                self.click(button, interval=1)
+        logger.warning(f'无法确认门票挑战消耗为 {target_cost} 张')
+        return False
 
     def get_general_battle_conf(self) -> tasks.Component.GeneralBattle.config_general_battle.GeneralBattleConfig:
         from tasks.Component.GeneralBattle.config_general_battle import GeneralBattleConfig as gbc

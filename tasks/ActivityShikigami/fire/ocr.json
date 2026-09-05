@@ -10,16 +10,16 @@
   },
   {
     "itemName": "remain_ap",
-    "roiFront": "1126,23,90,33",
-    "roiBack": "1106,23,134,33",
+    "roiFront": "1144,15,90,33",
+    "roiBack": "1106,8,134,48",
     "mode": "Quantity",
     "method": "Default",
     "keyword": "",
-    "description": "体力的数量检测"
+    "description": "游戏体力检测体力的数量检测，低于6无法战斗"
   },
   {
     "itemName": "remain_pass",
-    "roiFront": "540,26,77,27",
+    "roiFront": "768,18,77,27",
     "roiBack": "1043,177,92,20",
     "mode": "DigitSmall",
     "method": "Default",
@@ -82,11 +82,29 @@
   },
   {
     "itemName": "remain_timesx5",
-    "roiFront": "746,29,64,23",
+    "roiFront": "953,19,83,23",
     "roiBack": "0,0,100,100",
     "mode": "DigitSmall",
     "method": "Default",
     "keyword": "",
     "description": "剩余5倍次数"
+  },
+  {
+    "itemName": "remain_ap_pass",
+    "roiFront": "554,19,100,28",
+    "roiBack": "0,0,100,100",
+    "mode": "DigitSmall",
+    "method": "Default",
+    "keyword": "",
+    "description": "周年庆常规挑战门票，AP模式每次消耗1张，五倍消耗5张"
+  },
+  {
+    "itemName": "challenge_cost",
+    "roiFront": "1170,537,58,37",
+    "roiBack": "1170,537,58,37",
+    "mode": "DigitSmall",
+    "method": "Default",
+    "keyword": "",
+    "description": "PASS模式单次门票消耗：简单1张、困难5张，用于确认难度切换"
   }
 ]

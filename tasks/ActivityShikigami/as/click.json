@@ -28,5 +28,17 @@
     "roiFront": "42,94,1207,543",
     "roiBack": "42,94,1207,543",
     "description": "description"
+  },
+  {
+    "itemName": "easy_mode",
+    "roiFront": "1171,169,61,60",
+    "roiBack": "1146,144,100,100",
+    "description": "简单模式点击区域"
+  },
+  {
+    "itemName": "hard_mode",
+    "roiFront": "1126,342,61,59",
+    "roiBack": "1106,319,100,100",
+    "description": "困难模式点击区域"
   }
 ]

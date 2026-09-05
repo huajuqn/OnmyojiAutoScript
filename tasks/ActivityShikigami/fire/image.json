@@ -128,17 +128,17 @@
   {
     "itemName": "shishenlu",
     "imageName": "fire_shishenlu.png",
-    "roiFront": "997,559,45,46",
-    "roiBack": "964,533,100,100",
+    "roiFront": "1014,564,41,38",
+    "roiBack": "986,535,100,100",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "战斗准备界面的式神录入口"
   },
   {
     "itemName": "timesx5_true",
-    "imageName": "fire_timesx5_ture.png",
-    "roiFront": "845,646,44,47",
-    "roiBack": "832,628,69,80",
+    "imageName": "fire_timesx5_true.png",
+    "roiFront": "861,646,44,51",
+    "roiBack": "832,628,89,79",
     "method": "Template matching",
     "threshold": 0.9,
     "description": "5倍挑战开启"
@@ -146,10 +146,28 @@
   {
     "itemName": "timesx5_false",
     "imageName": "fire_timesx5_false.png",
-    "roiFront": "840,642,52,50",
+    "roiFront": "856,649,52,45",
     "roiBack": "814,619,100,100",
     "method": "Template matching",
     "threshold": 0.9,
     "description": "5倍挑战关闭"
+  },
+  {
+    "itemName": "easy_mode",
+    "imageName": "fire_easy_mode.png",
+    "roiFront": "1163,161,75,74",
+    "roiBack": "1144,135,113,128",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "简单难度入口（两种难度按钮同时显示，不代表已选中）"
+  },
+  {
+    "itemName": "hard_mode",
+    "imageName": "fire_hard_mode.png",
+    "roiFront": "1111,328,93,95",
+    "roiBack": "1090,302,147,145",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "困难难度入口（选中状态以门票消耗5张确认）"
   }
 ]

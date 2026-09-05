@@ -23,6 +23,14 @@ page_climb_act.additional = [gga.I_UI_REWARD, asa.I_SKIP_BUTTON, asa.I_CONFIRM_S
 page_climb_act.link(button=G.I_BACK_Y, destination=page_main)
 page_main.link(button=[asa.I_SHI, RAA.I_TOGGLE_BUTTON], destination=page_climb_act)
 
+# 周年庆：活动主页 → 亘地回响 → 虚无精锐挑战页。
+page_climb_battle_main = Page(asa.I_CHECK_BATTLE_MAIN)
+page_climb_act.link(button=asa.I_TO_BATTLE_MAIN, destination=page_climb_battle_main)
+page_climb_battle_main.link(button=G.I_BACK_Y, destination=page_climb_act)
+page_climb_challenge = Page(asa.I_BATTLE_FIRE_MAIN)
+page_climb_battle_main.link(button=asa.I_TO_BATTLE_MAIN_2, destination=page_climb_challenge)
+page_climb_challenge.link(button=G.I_BACK_Y, destination=page_climb_battle_main)
+
 # page_act_list_climb_act.link(button=G.I_ACT_LIST_GOTO_ACT, destination=page_climb_act)
 # # 爬塔活动副界面
 # page_climb_act_2 = Page(asa.I_CHECK_BATTLE_2)
