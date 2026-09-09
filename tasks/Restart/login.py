@@ -12,7 +12,6 @@ from tasks.base_task import BaseTask
 class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
     character: str
     VIDEO_SKIP_OCR_ALIASES = {'跳过', '跳過', '泐徹', '泐彻', '繚徹', '缭彻'}
-    ENTER_GAME_OCR_ALIASES = {'进入游戏', '進入遊戲'}
 
     def __init__(self, *wargs, **kwargs):
         super().__init__(*wargs, **kwargs)
@@ -29,17 +28,6 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
         # 跳过按钮在转场前会短暂保留，限制点击间隔避免触发防连点。
         if self.click(self.O_LOGIN_VIDEO_SKIP, interval=3):
             logger.info(f'Click video skip, OCR result: {result}')
-        return True
-
-    def ocr_appear_then_click_enter_game(self, interval: float = 3) -> bool:
-        """识别十周年登录页纵向两行的“进入游戏”并点击。"""
-        results = self.O_LOGIN_ENTER_GAME.detect_and_ocr(self.device.image)
-        text = ''.join(result.ocr_text for result in results)
-        text = text.strip().replace(' ', '')
-        if text not in self.ENTER_GAME_OCR_ALIASES:
-            return False
-        if self.click(self.C_LOGIN_ENTER_GAME, interval=interval):
-            logger.info(f'Click enter game, OCR result: {text}')
         return True
 
     def _app_handle_login(self) -> bool:
@@ -184,7 +172,8 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
                     if self.appear_then_click(self.I_EARLY_SERVER_CANCEL):
                         logger.info('Cancel switch from early server to normal server')
                         continue
-                self.ocr_appear_then_click_enter_game(interval=3)
+                if self.ocr_appear_click(self.O_LOGIN_ENTER_GAME, interval=3):
+                    self.wait_until_appear(self.I_LOGIN_SPECIFIC_SERVE, True, wait_time=5)
                 continue
 
             # 冷启动时可能错过用户中心图标，未知开屏持续 10 秒后按视频界面处理。
