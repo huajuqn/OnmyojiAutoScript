@@ -124,5 +124,14 @@
     "method": "Template matching",
     "threshold": 0.8,
     "description": "description"
+  },
+  {
+    "itemName": "get_award",
+    "imageName": "as_get_award.png",
+    "roiFront": "480,233,308,44",
+    "roiBack": "329,176,602,295",
+    "method": "Template matching",
+    "threshold": 0.8,
+    "description": "获取奖励"
   }
 ]

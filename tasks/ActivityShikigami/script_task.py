@@ -179,9 +179,13 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         return handled
 
     def try_close_unknown_page(self, skip_screenshot: bool = True):
-        """让页面导航也能识别并处理遮挡活动主页的每日补给弹窗。"""
+        """处理页面导航期间遮挡活动页面的补给或战斗奖励弹窗。"""
         if self._handle_daily_supply(skip_first_screenshot=skip_screenshot):
             logger.info('Daily activity supply popup handled')
+            return True
+        if self.appear(self.I_GET_AWARD):
+            logger.info('Activity reward popup handled during page recovery')
+            self.random_reward_click(exclude_click=[self.C_RANDOM_TOP, self.C_RANDOM_LEFT])
             return True
         return super().try_close_unknown_page(skip_screenshot=True)
 
@@ -251,6 +255,8 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 random_sleep(probability=0.2)
             if self.start_battle():
                 continue
+            logger.warning('门票模式未能进入战斗，停止当前爬塔模式')
+            break
 
         self.ui_click(self.I_UI_BACK_YELLOW, stop=self.I_TO_BATTLE_MAIN, interval=1)
 
@@ -280,12 +286,14 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             if remain_tickets <= 0:
                 logger.warning(f'No tickets left, wait for next time')
                 break
-            if self.conf.general_climb.anniversary_timesx5 and not self.switch_timesx5(remain_tickets):
+            if not self.switch_timesx5(remain_tickets):
                 raise GameStuckError('体力五倍模式未确认，停止点击挑战')
             if self.conf.general_climb.random_sleep:
                 random_sleep(probability=0.2)
             if self.start_battle():
                 continue
+            logger.warning('体力模式未能进入战斗，停止当前爬塔模式')
+            break
 
         self.ui_click(self.I_UI_BACK_YELLOW, stop=self.I_TO_BATTLE_MAIN, interval=1)
 
@@ -311,6 +319,8 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 random_sleep(probability=0.2)
             if self.start_battle():
                 continue
+            logger.warning('Boss 模式未能进入战斗，停止当前爬塔模式')
+            break
 
         self.ui_click(self.I_UI_BACK_YELLOW, stop=self.I_TO_BATTLE_BOSS, interval=1)
 
@@ -320,15 +330,19 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         """
         logger.hr(f'Start run climb type AP100')
 
-    def start_battle(self):
+    def start_battle(self) -> bool:
+        """点击挑战并运行通用战斗。
+
+        :return: True 表示已进入并处理战斗；False 表示多次点击后仍未进入战斗。
+        """
         click_times, max_times = 0, random.randint(4, 8)
         while 1:
             self.screenshot()
             if self.is_in_battle(False):
                 break
             if click_times >= max_times:
-                logger.warning(f'Climb {self.climb_type} cannot enter, maybe already end, try next')
-                return
+                logger.warning(f'Climb {self.climb_type} cannot enter after {click_times} attempts')
+                return False
             if (self.appear_then_click(self.I_UI_CONFIRM_SAMLL, interval=1) or
                     self.appear_then_click(self.I_UI_CONFIRM, interval=1) ):
                 continue
@@ -338,6 +352,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 continue
         # 运行战斗
         self.run_general_battle(config=self.get_general_battle_conf())
+        return True
 
     def battle_wait(self, random_click_swipt_enable: bool) -> bool:
         # 通用战斗结束判断
@@ -356,6 +371,8 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 break
             # 识别到挑战说明已经退出战斗
             if ok_cnt > 0 and self.appear(self.I_FIRE_BUTTON):
+                logger.info('Activity challenge page restored after battle')
+                self.device.stuck_record_clear()
                 return True
             # 战斗失败
             if self.appear(self.I_FALSE):
@@ -364,6 +381,18 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 return False
             # 战斗成功
             if self.appear_then_click(self.I_WIN, interval=2):
+                # 新版奖励弹窗可能不再包含旧的通用奖励素材。记录已经出现过
+                # 胜利状态，奖励关闭后只要挑战按钮恢复即可结束战斗等待。
+                ok_cnt = max(ok_cnt, 1)
+                continue
+            # 当前活动胜利后会额外弹出“获得奖励”窗口。该窗口不包含通用
+            # 战利品素材，必须先点击空白区域关闭，随后才能回到挑战页。
+            if self.appear(self.I_GET_AWARD):
+                logger.info('Activity reward popup detected')
+                self.random_reward_click(exclude_click=[self.C_RANDOM_TOP, self.C_RANDOM_LEFT])
+                # 弹窗可能一次点击就消失。将奖励阶段直接置为已确认，确保
+                # 过渡动画期间仍会继续点击，并最终等待挑战按钮重新出现。
+                ok_cnt = max(ok_cnt, 4)
                 continue
             # 出现奖励标识，或战利品总览提示“点击屏幕继续”
             if self.appear(self.I_REWARD) or self.appear(self.I_REWARD_PURPLE_SNAKE_SKIN) or \
@@ -388,6 +417,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         enable_switch = getattr(conf, f"enable_switch_{self.climb_type}", False)
         enable_by_name = getattr(conf, f"enable_switch_{self.climb_type}_by_name", False)
         if not enable_switch and not enable_by_name:
+            logger.info(f'Skip switch soul for {self.climb_type}: corresponding switch is disabled')
             return
         logger.hr('Start switch soul', 2)
         conf.validate_switch_soul()
@@ -463,11 +493,10 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             remain_times = self.O_REMAIN_PASS.ocr_digit(self.device.image)
         if self.climb_type == 'ap':
             remain_times = self.O_REMAIN_AP.ocr_quantity(self.device.image)
-            if self.conf.general_climb.anniversary_timesx5:
-                normal_tickets = self.O_REMAIN_AP_PASS.ocr(self.device.image)
-                logger.info(f'常规挑战资源: 体力={remain_times}, 门票={normal_tickets}')
-                # AP 每次需要 6 体力和 1 张常规门票，返回可执行的单倍次数。
-                remain_times = min(remain_times // 6, normal_tickets)
+            normal_tickets = self.O_REMAIN_AP_PASS.ocr(self.device.image)
+            logger.info(f'常规挑战资源: 体力={remain_times}, 门票={normal_tickets}')
+            # AP 每次需要 6 体力和 1 张常规门票，返回可执行的单倍次数。
+            remain_times = min(remain_times // 6, normal_tickets)
         if self.climb_type == 'boss':
             _, remain_times, _ = self.O_REMAIN_BOSS.ocr_digit_counter(self.device.image)
         if self.climb_type == 'ap100':

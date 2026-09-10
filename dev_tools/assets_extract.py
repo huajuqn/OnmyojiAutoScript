@@ -11,7 +11,7 @@ from module.logger import logger
 
 MODULE_FOLDER = 'tasks'
 ASSETS_FILE = 'assets.py'
-ASSETS_CLASS = '\nclass Assets: \n'
+ASSETS_CLASS = '\nclass Assets:\n'
 IMPORT_EXP = """
 from module.atom.image import RuleImage
 from module.atom.click import RuleClick
@@ -65,7 +65,7 @@ class ImageExtractor:
         :param item:
         :return:
         """
-        description: str = f'\t# {item["description"]} \n'
+        description: str = f'\t# {item["description"]}\n'
         name: str = f'\tI_{name_transform(item["itemName"])} = RuleImage(' \
                     f'roi_front=({item["roiFront"]}), ' \
                     f'roi_back=({item["roiBack"]}), ' \
@@ -96,7 +96,7 @@ class ClickExtractor:
         :param item:
         :return:
         """
-        description: str = f'\t# {item["description"]} \n'
+        description: str = f'\t# {item["description"]}\n'
         name: str = f'\tC_{name_transform(item["itemName"])} = RuleClick(' \
                     f'roi_front=({item["roiFront"]}), ' \
                     f'roi_back=({item["roiBack"]}), ' \
@@ -125,7 +125,7 @@ class LongClickExtractor:
         :param item:
         :return:
         """
-        description: str = f'\t# {item["description"]} \n'
+        description: str = f'\t# {item["description"]}\n'
         name: str = f'\tL_{name_transform(item["itemName"])} = RuleLongClick(' \
                     f'roi_front=({item["roiFront"]}), ' \
                     f'roi_back=({item["roiBack"]}), ' \
@@ -155,7 +155,7 @@ class SwipeExtractor:
         :param item:
         :return:
         """
-        description: str = f'\t# {item["description"]} \n'
+        description: str = f'\t# {item["description"]}\n'
         name: str = f'\tS_{name_transform(item["itemName"])} = RuleSwipe(' \
                     f'roi_front=({item["roiFront"]}), ' \
                     f'roi_back=({item["roiBack"]}), ' \
@@ -185,7 +185,7 @@ class OcrExtractor:
         :param item:
         :return:
         """
-        description: str = f'\t# {item["description"]} \n'
+        description: str = f'\t# {item["description"]}\n'
         name: str = f'\tO_{name_transform(item["itemName"])} = RuleOcr(' \
                     f'roi=({item["roiFront"]}), ' \
                     f'area=({item["roiBack"]}), ' \
@@ -238,7 +238,7 @@ class ListExtractor:
         height = int(height / len(items))
         array = ', '.join(array)
 
-        description: str = f'\t# {data["description"]} \n'
+        description: str = f'\t# {data["description"]}\n'
         name: str = f'\tL_{name_transform(data["name"])} = RuleList(' \
                     f'folder="./{str(self.image_path)}", ' \
                     f'direction="{data["direction"]}", ' \
@@ -261,7 +261,7 @@ class AssetsExtractor:
         self.task_name = self.task_path.name
         self.assets_file = self.task_path / ASSETS_FILE
 
-        self.class_name = f'\nclass {self.task_name}Assets: \n'
+        self.class_name = f'\nclass {self.task_name}Assets:\n'
 
         self._result = ''
         for import_exp in IMPORT_EXP:

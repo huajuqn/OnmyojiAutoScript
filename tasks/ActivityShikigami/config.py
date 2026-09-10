@@ -39,8 +39,8 @@ class ActivityClimbConfig(GeneralClimb):
     prefer_timesx5: bool = Field(default=False, description='是否优先使用5倍挑战')
     anniversary_timesx5: bool = Field(
         default=True,
-        description='周年庆五倍规则：门票模式通过简单/困难切换1倍/免费5倍；'
-                    '体力模式消耗五倍券、30体力和5张常规门票。后续普通活动关闭此项恢复原规则')
+        description='周年庆门票五倍规则：门票模式通过简单/困难切换1倍/免费5倍。'
+                    '体力模式始终使用5倍券，不受此开关影响')
 
 
 class SwitchSoulConfig(BaseModel):

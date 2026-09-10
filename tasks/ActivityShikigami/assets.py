@@ -69,6 +69,8 @@ class ActivityShikigamiAssets:
 	I_RED_EXIT2 = RuleImage(roi_front=(1106,190,29,27), roi_back=(1061,152,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_red_exit2.png")
 	# description
 	I_BATTLE_FIRE_MAIN = RuleImage(roi_front=(148,16,139,42), roi_back=(0,0,409,96), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_battle_fire_main.png")
+	# 获取奖励
+	I_GET_AWARD = RuleImage(roi_front=(480,233,308,44), roi_back=(329,176,602,295), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_get_award.png")
 
 
 	# Image Rule Assets
