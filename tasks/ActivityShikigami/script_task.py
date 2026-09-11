@@ -363,12 +363,32 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         for btn in (self.C_RANDOM_LEFT, self.C_RANDOM_RIGHT, self.C_RANDOM_TOP, self.C_RANDOM_BOTTOM):
             btn.name = "BATTLE_RANDOM"
         ok_cnt, max_retry = 0, 8
+        real_battle_seen = False
         while 1:
             sleep(random.uniform(0.5, 1.5))
             self.screenshot()
             # 达到最大重试次数则直接交给上层处理
             if ok_cnt > max_retry:
                 break
+            # 点击准备后游戏偶尔不会真正开战。通用战斗会在此时进入等待
+            # 结果的流程，因此仅在活动任务内补充开战阶段的恢复处理。
+            if ok_cnt == 0:
+                if self.is_in_real_battle(False):
+                    real_battle_seen = True
+                elif self.is_in_prepare(False):
+                    if self.appear_then_click(self.I_PREPARE_HIGHLIGHT, interval=0.8):
+                        logger.warning('Activity battle is still preparing, retry prepare')
+                    continue
+                elif self.appear(self.I_FIRE_BUTTON):
+                    if not real_battle_seen:
+                        # 本次没有消耗门票，也不能占用用户配置的挑战次数。
+                        self.current_count = max(0, self.current_count - 1)
+                        self.count_map[self.climb_type] = self.current_count
+                        logger.warning('Activity battle did not start, retry challenge')
+                    else:
+                        logger.warning('Activity battle returned without reward result')
+                    self.device.stuck_record_clear()
+                    return True
             # 识别到挑战说明已经退出战斗
             if ok_cnt > 0 and self.appear(self.I_FIRE_BUTTON):
                 logger.info('Activity challenge page restored after battle')
