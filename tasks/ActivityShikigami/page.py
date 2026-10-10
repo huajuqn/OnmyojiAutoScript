@@ -4,6 +4,7 @@ from tasks.GlobalGame.assets import GlobalGameAssets as gga
 from tasks.GameUi.assets import GameUiAssets as G
 from tasks.Component.RightActivity.assets import RightActivityAssets as RAA
 from tasks.base_task import BaseTask as BT
+from tasks.ActivityShikigami.map_node import BATTLE_NODE
 
 # ************************************* 活动部分 *****************************************#
 
@@ -28,7 +29,7 @@ page_climb_battle_main = Page(asa.I_BATTLE_FIRE_MAIN)
 page_climb_act.link(button=asa.I_TO_BATTLE_MAIN, destination=page_climb_battle_main)
 page_climb_battle_main.link(button=asa.I_MAP_BACK, destination=page_climb_act)
 page_climb_challenge = Page(asa.I_FIRE_BUTTON)
-page_climb_battle_main.link(button=asa.I_TO_BATTLE_MAIN_2, destination=page_climb_challenge)
+page_climb_battle_main.link(button=BATTLE_NODE, destination=page_climb_challenge)
 page_climb_challenge.link(button=asa.I_BACK_GREEN, destination=page_climb_battle_main)
 
 # page_act_list_climb_act.link(button=G.I_ACT_LIST_GOTO_ACT, destination=page_climb_act)

@@ -28,6 +28,7 @@ from tasks.Component.SwitchSoul.switch_soul import SwitchSoul
 from tasks.GameUi.game_ui import GameUi
 import tasks.Component.GeneralBattle.config_general_battle
 import tasks.ActivityShikigami.page as game
+from tasks.ActivityShikigami.map_node import BATTLE_NODE, SEARCH_ROUTE, find_battle_nodes
 
 
 def _prepare_image_for_ocr(image: np.ndarray, asset: RuleOcr) -> np.ndarray:
@@ -271,6 +272,10 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
                 random_sleep(probability=0.2)
             if self.start_battle():
                 continue
+            if self.appear(self.I_BATTLE_FIRE_MAIN):
+                logger.info('攻略点刷新，重新搜索当前地图')
+                self.enter_climb_challenge()
+                continue
             logger.warning('门票模式未能进入战斗，停止当前爬塔模式')
             break
 
@@ -358,6 +363,8 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
             self.screenshot()
             if self.is_in_battle(False):
                 break
+            if self.climb_type == 'pass' and self.appear(self.I_BATTLE_FIRE_MAIN):
+                return False
             if timeout.reached() or click_times >= max_times:
                 logger.warning(f'Climb {self.climb_type} cannot enter after {click_times} attempts')
                 return False
@@ -385,7 +392,10 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         while 1:
             sleep(random.uniform(0.5, 1.5))
             self.screenshot()
-            if self.appear(self.I_BATTLE_FIRE_MAIN) and (real_battle_seen or ok_cnt > 0):
+            if self.appear(self.I_BATTLE_FIRE_MAIN):
+                if not real_battle_seen and ok_cnt == 0:
+                    self.current_count = max(0, self.current_count - 1)
+                    self.count_map[self.climb_type] = self.current_count
                 logger.info('Activity area completed, returned to map')
                 self.device.stuck_record_clear()
                 return True
@@ -482,11 +492,62 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
         self.ui_click(self.I_UI_BACK_YELLOW, stop=cur_img, interval=1)
 
     def enter_climb_challenge(self):
-        """战斗旗帜在全地图搜索，点击坐标随匹配结果移动。"""
+        """通过地图点位的边缘特征和平移搜索进入当前开放的挑战页。"""
         self.ui_get_current_page(False)
-        self.ui_goto(game.page_climb_challenge)
+        if not self.ui_goto(game.page_climb_challenge, timeout=120):
+            raise GameStuckError('无法通过地图搜索进入活动挑战页')
         if not self.wait_until_appear(self.I_FIRE_BUTTON, wait_time=8):
             raise GameStuckError('已进入活动挑战页，但未识别到挑战按钮')
+
+    def appear_then_operate(self, target, interval=None, skip_first_screenshot=True):
+        if target is BATTLE_NODE:
+            return self.search_climb_node()
+        return super().appear_then_operate(target, interval, skip_first_screenshot)
+
+    def search_climb_node(self) -> bool:
+        """只在地图平移；点击失败后尝试其他点，每次刷新重新提取特征。"""
+        timeout = Timer(75).start()
+        previous = SEARCH_ROUTE[0]
+        for position in SEARCH_ROUTE:
+            self.screenshot()
+            if self.appear(self.I_FIRE_BUTTON):
+                return True
+            if timeout.reached():
+                break
+            if not self.appear(self.I_BATTLE_FIRE_MAIN):
+                raise GameStuckError('地图搜索期间离开了磐长故地地图')
+            dx, dy = position[0] - previous[0], position[1] - previous[1]
+            if dx:
+                start, end = ((820, 590), (430, 590)) if dx > 0 else ((430, 590), (820, 590))
+            elif dy:
+                start, end = ((750, 350), (750, 610)) if dy < 0 else ((750, 610), (750, 350))
+            if dx or dy:
+                logger.info(f'Search activity map: {position}')
+                self.device.swipe(start, end, duration=0.25, control_name='ACTIVITY_MAP_SEARCH')
+                sleep(0.6)
+                self.screenshot()
+                if not self.appear(self.I_BATTLE_FIRE_MAIN):
+                    raise GameStuckError('平移后无法确认磐长故地地图')
+            previous = position
+            # 每轮只保留当前画面的候选，人物移动、节点刷新后重新检测。
+            attempted = []
+            for _ in range(6):
+                if timeout.reached():
+                    break
+                candidates = [node for node in find_battle_nodes(self.device.image)
+                              if all(abs(node[0] - x) + abs(node[1] - y) > 35 for x, y in attempted)]
+                if not candidates:
+                    break
+                x, y, score = candidates[0]
+                logger.info(f'Activity node edge match: ({x}, {y}), score={score:.3f}')
+                attempted.append((x, y))
+                self.device.click(x=x, y=y, control_name='ACTIVITY_MAP_BATTLE_NODE')
+                if self.wait_until_appear(self.I_FIRE_BUTTON, wait_time=2):
+                    return True
+                self.screenshot()
+                if not self.appear(self.I_BATTLE_FIRE_MAIN):
+                    raise GameStuckError('点击地图点位后进入未知界面')
+        raise GameStuckError('地图四向搜索结束，未找到可进入的攻略点位')
 
     def switch_climb_mode_in_game(self, mode: str = 'ap'):
         # 本期地图挑战只有活动门票，不存在门票/体力切换按钮。
