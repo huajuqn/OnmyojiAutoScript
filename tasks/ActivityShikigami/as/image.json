@@ -2,29 +2,29 @@
   {
     "itemName": "lock",
     "imageName": "as_lock.png",
-    "roiFront": "869,652,28,25",
-    "roiBack": "739,613,276,85",
+    "roiFront": "894,650,34,34",
+    "roiBack": "884,640,55,55",
     "method": "Template matching",
-    "threshold": 0.5,
+    "threshold": 0.85,
     "description": "上锁图标"
   },
   {
     "itemName": "unlock",
     "imageName": "as_unlock.png",
-    "roiFront": "871,655,28,25",
-    "roiBack": "733,607,266,95",
+    "roiFront": "894,650,34,34",
+    "roiBack": "884,640,55,55",
     "method": "Template matching",
-    "threshold": 0.5,
+    "threshold": 0.85,
     "description": "还未上锁图片"
   },
   {
     "itemName": "climb_mode_pass",
-    "imageName": "as_climb_mode_pass.png",
-    "roiFront": "1142,543,24,27",
-    "roiBack": "1118,510,146,85",
+    "imageName": "as_current_pass.png",
+    "roiFront": "1147,638,25,30",
+    "roiBack": "1135,625,45,55",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "活动爬塔标志"
+    "description": "本期挑战按钮的活动门票图标"
   },
   {
     "itemName": "climb_mode_ap",

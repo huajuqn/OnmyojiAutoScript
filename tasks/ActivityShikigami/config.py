@@ -36,11 +36,11 @@ def check_soul_by_ocr(enable_switch: bool, group_team: str, label: str):
 
 
 class ActivityClimbConfig(GeneralClimb):
+    run_sequence: str = Field(default='pass', description='本期仅支持活动门票爬塔 pass，其他模式会跳过')
     prefer_timesx5: bool = Field(default=False, description='是否优先使用5倍挑战')
     anniversary_timesx5: bool = Field(
         default=True,
-        description='周年庆门票五倍规则：门票模式通过简单/困难切换1倍/免费5倍。'
-                    '体力模式始终使用5倍券，不受此开关影响')
+        description='旧活动兼容设置；本期PASS固定通过简单/困难切换1倍/免费5倍，不受此开关影响')
 
 
 class SwitchSoulConfig(BaseModel):

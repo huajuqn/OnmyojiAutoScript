@@ -22,18 +22,18 @@ class ActivityShikigamiAssets:
 	# description
 	C_RANDOM_ALL = RuleClick(roi_front=(42,94,1207,543), roi_back=(42,94,1207,543), name="random_all")
 	# 简单模式点击区域
-	C_EASY_MODE = RuleClick(roi_front=(1171,169,61,60), roi_back=(1146,144,100,100), name="easy_mode")
+	C_EASY_MODE = RuleClick(roi_front=(1149,279,65,58), roi_back=(1149,279,65,58), name="easy_mode")
 	# 困难模式点击区域
-	C_HARD_MODE = RuleClick(roi_front=(1126,342,61,59), roi_back=(1106,319,100,100), name="hard_mode")
+	C_HARD_MODE = RuleClick(roi_front=(1141,390,65,62), roi_back=(1141,390,65,62), name="hard_mode")
 
 
 	# Image Rule Assets
 	# 上锁图标
-	I_LOCK = RuleImage(roi_front=(869,652,28,25), roi_back=(739,613,276,85), threshold=0.5, method="Template matching", file="./tasks/ActivityShikigami/as/as_lock.png")
+	I_LOCK = RuleImage(roi_front=(894,650,34,34), roi_back=(884,640,55,55), threshold=0.85, method="Template matching", file="./tasks/ActivityShikigami/as/as_lock.png")
 	# 还未上锁图片
-	I_UNLOCK = RuleImage(roi_front=(871,655,28,25), roi_back=(733,607,266,95), threshold=0.5, method="Template matching", file="./tasks/ActivityShikigami/as/as_unlock.png")
-	# 活动爬塔标志
-	I_CLIMB_MODE_PASS = RuleImage(roi_front=(1142,543,24,27), roi_back=(1118,510,146,85), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_climb_mode_pass.png")
+	I_UNLOCK = RuleImage(roi_front=(894,650,34,34), roi_back=(884,640,55,55), threshold=0.85, method="Template matching", file="./tasks/ActivityShikigami/as/as_unlock.png")
+	# 本期挑战按钮的活动门票图标
+	I_CLIMB_MODE_PASS = RuleImage(roi_front=(1147,638,25,30), roi_back=(1135,625,45,55), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_current_pass.png")
 	# 体力爬塔标志
 	I_CLIMB_MODE_AP = RuleImage(roi_front=(1090,545,22,25), roi_back=(1055,495,207,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_climb_mode_ap.png")
 	# 切换按键
@@ -42,7 +42,7 @@ class ActivityShikigamiAssets:
 
 	# Image Rule Assets
 	# 庭院进入活动入口
-	I_SHI = RuleImage(roi_front=(1195,222,31,35), roi_back=(1155,115,98,473), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_shi.png")
+	I_SHI = RuleImage(roi_front=(1192,223,31,35), roi_back=(1155,115,98,473), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_shi.png")
 	# 左上角返回
 	I_BACK_GREEN = RuleImage(roi_front=(27,19,34,38), roi_back=(2,1,170,75), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_back_green.png")
 	# 右上跳过按钮
@@ -50,7 +50,7 @@ class ActivityShikigamiAssets:
 	# 红色退出
 	I_RED_EXIT = RuleImage(roi_front=(1162,96,39,38), roi_back=(1120,49,110,135), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_red_exit.png")
 	# 进入当前活动爬塔战斗界面
-	I_TO_BATTLE_MAIN = RuleImage(roi_front=(349,178,50,98), roi_back=(309,133,103,197), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_to_battle_main.png")
+	I_TO_BATTLE_MAIN = RuleImage(roi_front=(801,455,142,64), roi_back=(785,403,195,144), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_to_battle_main.png")
 	# 点击进入boss战斗页面
 	I_TO_BATTLE_BOSS = RuleImage(roi_front=(1085,289,33,121), roi_back=(934,209,234,327), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_to_battle_boss.png")
 	# 战斗界面识别标志
@@ -59,8 +59,8 @@ class ActivityShikigamiAssets:
 	I_CHECK_BATTLE_BOSS = RuleImage(roi_front=(34,365,45,35), roi_back=(20,328,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_check_battle_boss.png")
 	# 从main进入到式神录
 	I_BATTLE_MAIN_TO_RECORDS = RuleImage(roi_front=(1017,564,35,38), roi_back=(966,534,140,100), threshold=0.7, method="Template matching", file="./tasks/ActivityShikigami/as/as_battle_main_to_records.png")
-	# 从战斗界面，进入挑战的入口
-	I_TO_BATTLE_MAIN_2 = RuleImage(roi_front=(15,94,247,38), roi_back=(2,68,311,100), threshold=0.65, method="Template matching", file="./tasks/ActivityShikigami/as/as_to_battle_main_2.png")
+	# 磐长故地地图公共战斗旗帜，按匹配位置进入已开放区域
+	I_TO_BATTLE_MAIN_2 = RuleImage(roi_front=(661,408,21,36), roi_back=(60,150,1105,425), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_battle_node.png")
 	# 确认跳过
 	I_CONFIRM_SKIP = RuleImage(roi_front=(707,442,137,38), roi_back=(656,397,231,124), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_confirm_skip.png")
 	# 每日奖励弹窗
@@ -68,9 +68,11 @@ class ActivityShikigamiAssets:
 	# 红色退出2，每日补给关闭界面
 	I_RED_EXIT2 = RuleImage(roi_front=(1106,190,29,27), roi_back=(1061,152,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_red_exit2.png")
 	# description
-	I_BATTLE_FIRE_MAIN = RuleImage(roi_front=(148,16,139,42), roi_back=(0,0,409,96), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_battle_fire_main.png")
+	I_BATTLE_FIRE_MAIN = RuleImage(roi_front=(587,4,139,42), roi_back=(404,2,409,96), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_battle_fire_main.png")
 	# 获取奖励
 	I_GET_AWARD = RuleImage(roi_front=(480,233,308,44), roi_back=(329,176,602,295), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_get_award.png")
+	# 磐长故地地图圆形返回按钮
+	I_MAP_BACK = RuleImage(roi_front=(21,18,44,40), roi_back=(8,5,75,65), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_map_back.png")
 
 
 	# Image Rule Assets
@@ -103,24 +105,24 @@ class ActivityShikigamiAssets:
 	# 魇兽将的战斗图片
 	I_PASS_13 = RuleImage(roi_front=(1018,570,100,100), roi_back=(984,538,169,152), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_pass_13.png")
 	# 战斗准备界面的式神录入口
-	I_SHISHENLU = RuleImage(roi_front=(1014,564,41,38), roi_back=(986,535,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_shishenlu.png")
+	I_SHISHENLU = RuleImage(roi_front=(1019,566,41,38), roi_back=(986,535,100,100), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_shishenlu.png")
 	# 5倍挑战开启
 	I_TIMESX5_TRUE = RuleImage(roi_front=(861,646,44,51), roi_back=(832,628,89,79), threshold=0.9, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_timesx5_true.png")
 	# 5倍挑战关闭
 	I_TIMESX5_FALSE = RuleImage(roi_front=(856,649,52,45), roi_back=(814,619,100,100), threshold=0.9, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_timesx5_false.png")
 	# 简单难度入口（两种难度按钮同时显示，不代表已选中）
-	I_EASY_MODE = RuleImage(roi_front=(1163,161,75,74), roi_back=(1144,135,113,128), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_easy_mode.png")
+	I_EASY_MODE = RuleImage(roi_front=(1149,279,65,58), roi_back=(1127,237,113,128), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_easy_mode.png")
 	# 困难难度入口（选中状态以门票消耗5张确认）
-	I_HARD_MODE = RuleImage(roi_front=(1111,328,93,95), roi_back=(1090,302,147,145), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_hard_mode.png")
+	I_HARD_MODE = RuleImage(roi_front=(1141,390,65,62), roi_back=(1092,347,147,145), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/fire/fire_hard_mode.png")
 
 
 	# Ocr Rule Assets
 	# 挑战
-	O_FIRE = RuleOcr(roi=(1124,599,96,50), area=(1123,570,106,100), mode="Single", method="Default", keyword="挑战", name="fire")
+	O_FIRE = RuleOcr(roi=(1128,589,96,50), area=(1117,570,117,100), mode="Single", method="Default", keyword="挑战", name="fire")
 	# 游戏体力检测体力的数量检测，低于6无法战斗
-	O_REMAIN_AP = RuleOcr(roi=(1144,15,90,33), area=(1106,8,134,48), mode="Quantity", method="Default", keyword="", name="remain_ap")
-	# 活动体力的剩余检测
-	O_REMAIN_PASS = RuleOcr(roi=(768,18,77,27), area=(1043,177,92,20), mode="DigitSmall", method="Default", keyword="", name="remain_pass")
+	O_REMAIN_AP = RuleOcr(roi=(1122,23,90,33), area=(1106,8,134,57), mode="Quantity", method="Default", keyword="", name="remain_ap")
+	# 磐长故地活动门票剩余数量
+	O_REMAIN_PASS = RuleOcr(roi=(1138,28,77,27), area=(1043,177,92,20), mode="DigitSmall", method="Default", keyword="", name="remain_pass")
 	# 还有多少次购买体力的机会
 	O_REMAIN_BUY = RuleOcr(roi=(808,531,39,42), area=(808,531,39,42), mode="DigitCounter", method="Default", keyword="", name="remain_buy")
 	# 活动票数（没有百分比）
@@ -138,6 +140,6 @@ class ActivityShikigamiAssets:
 	# 周年庆常规挑战门票，AP模式每次消耗1张，五倍消耗5张
 	O_REMAIN_AP_PASS = RuleOcr(roi=(554,19,100,28), area=(0,0,100,100), mode="DigitSmall", method="Default", keyword="", name="remain_ap_pass")
 	# PASS模式单次门票消耗：简单1张、困难5张，用于确认难度切换
-	O_CHALLENGE_COST = RuleOcr(roi=(1170,537,58,37), area=(1170,537,58,37), mode="DigitSmall", method="Default", keyword="", name="challenge_cost")
+	O_CHALLENGE_COST = RuleOcr(roi=(1170,637,45,35), area=(1170,637,45,35), mode="DigitSmall", method="Default", keyword="", name="challenge_cost")
 
 

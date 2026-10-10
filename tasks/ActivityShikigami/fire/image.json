@@ -128,7 +128,7 @@
   {
     "itemName": "shishenlu",
     "imageName": "fire_shishenlu.png",
-    "roiFront": "1014,564,41,38",
+    "roiFront": "1019,566,41,38",
     "roiBack": "986,535,100,100",
     "method": "Template matching",
     "threshold": 0.8,
@@ -155,8 +155,8 @@
   {
     "itemName": "easy_mode",
     "imageName": "fire_easy_mode.png",
-    "roiFront": "1163,161,75,74",
-    "roiBack": "1144,135,113,128",
+    "roiFront": "1149,279,65,58",
+    "roiBack": "1127,237,113,128",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "简单难度入口（两种难度按钮同时显示，不代表已选中）"
@@ -164,8 +164,8 @@
   {
     "itemName": "hard_mode",
     "imageName": "fire_hard_mode.png",
-    "roiFront": "1111,328,93,95",
-    "roiBack": "1090,302,147,145",
+    "roiFront": "1141,390,65,62",
+    "roiBack": "1092,347,147,145",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "困难难度入口（选中状态以门票消耗5张确认）"

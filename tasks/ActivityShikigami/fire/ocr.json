@@ -1,110 +1,110 @@
 [
   {
     "itemName": "fire",
-    "roiFront": "1124,599,96,50",
-    "roiBack": "1123,570,106,100",
-    "mode": "Single",
+    "roiFront": "1128,589,96,50",
+    "roiBack": "1117,570,117,100",
     "method": "Default",
-    "keyword": "挑战",
-    "description": "挑战"
+    "description": "挑战",
+    "mode": "Single",
+    "keyword": "挑战"
   },
   {
     "itemName": "remain_ap",
-    "roiFront": "1144,15,90,33",
-    "roiBack": "1106,8,134,48",
-    "mode": "Quantity",
+    "roiFront": "1122,23,90,33",
+    "roiBack": "1106,8,134,57",
     "method": "Default",
-    "keyword": "",
-    "description": "游戏体力检测体力的数量检测，低于6无法战斗"
+    "description": "游戏体力检测体力的数量检测，低于6无法战斗",
+    "mode": "Quantity",
+    "keyword": ""
   },
   {
     "itemName": "remain_pass",
-    "roiFront": "768,18,77,27",
+    "roiFront": "1138,28,77,27",
     "roiBack": "1043,177,92,20",
-    "mode": "DigitSmall",
     "method": "Default",
-    "keyword": "",
-    "description": "活动体力的剩余检测"
+    "description": "磐长故地活动门票剩余数量",
+    "mode": "DigitSmall",
+    "keyword": ""
   },
   {
     "itemName": "remain_buy",
     "roiFront": "808,531,39,42",
     "roiBack": "808,531,39,42",
-    "mode": "DigitCounter",
     "method": "Default",
-    "keyword": "",
-    "description": "还有多少次购买体力的机会"
+    "description": "还有多少次购买体力的机会",
+    "mode": "DigitCounter",
+    "keyword": ""
   },
   {
     "itemName": "remain_pass2",
     "roiFront": "731,25,76,27",
     "roiBack": "629,97,77,38",
-    "mode": "Digit",
     "method": "Default",
-    "keyword": "",
-    "description": "活动票数（没有百分比）"
+    "description": "活动票数（没有百分比）",
+    "mode": "Digit",
+    "keyword": ""
   },
   {
     "itemName": "remain_boss",
     "roiFront": "1113,669,131,31",
     "roiBack": "1099,659,162,52",
-    "mode": "DigitCounter",
     "method": "Default",
-    "keyword": "",
-    "description": "boss剩余攻击次数"
+    "description": "boss剩余攻击次数",
+    "mode": "DigitCounter",
+    "keyword": ""
   },
   {
     "itemName": "remain_ap100",
     "roiFront": "927,28,100,25",
     "roiBack": "906,22,125,36",
-    "mode": "Digit",
     "method": "Default",
-    "keyword": "",
-    "description": "100体活动门票检测"
+    "description": "100体活动门票检测",
+    "mode": "Digit",
+    "keyword": ""
   },
   {
     "itemName": "enter_ap100",
     "roiFront": "73,98,95,32",
     "roiBack": "5,79,256,108",
-    "mode": "Single",
     "method": "Default",
-    "keyword": "将魂试炼",
-    "description": "进入100体活动标识"
+    "description": "进入100体活动标识",
+    "mode": "Single",
+    "keyword": "将魂试炼"
   },
   {
     "itemName": "continue_click",
     "roiFront": "544,672,195,43",
     "roiBack": "0,0,100,100",
-    "mode": "Single",
     "method": "Default",
-    "keyword": "点击屏幕继续",
-    "description": "继续点击屏幕"
+    "description": "继续点击屏幕",
+    "mode": "Single",
+    "keyword": "点击屏幕继续"
   },
   {
     "itemName": "remain_timesx5",
     "roiFront": "953,19,83,23",
     "roiBack": "0,0,100,100",
-    "mode": "DigitSmall",
     "method": "Default",
-    "keyword": "",
-    "description": "剩余5倍次数"
+    "description": "剩余5倍次数",
+    "mode": "DigitSmall",
+    "keyword": ""
   },
   {
     "itemName": "remain_ap_pass",
     "roiFront": "554,19,100,28",
     "roiBack": "0,0,100,100",
-    "mode": "DigitSmall",
     "method": "Default",
-    "keyword": "",
-    "description": "周年庆常规挑战门票，AP模式每次消耗1张，五倍消耗5张"
+    "description": "周年庆常规挑战门票，AP模式每次消耗1张，五倍消耗5张",
+    "mode": "DigitSmall",
+    "keyword": ""
   },
   {
     "itemName": "challenge_cost",
-    "roiFront": "1170,537,58,37",
-    "roiBack": "1170,537,58,37",
-    "mode": "DigitSmall",
+    "roiFront": "1170,637,45,35",
+    "roiBack": "1170,637,45,35",
     "method": "Default",
-    "keyword": "",
-    "description": "PASS模式单次门票消耗：简单1张、困难5张，用于确认难度切换"
+    "description": "PASS模式单次门票消耗：简单1张、困难5张，用于确认难度切换",
+    "mode": "DigitSmall",
+    "keyword": ""
   }
 ]
