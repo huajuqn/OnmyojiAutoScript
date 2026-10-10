@@ -2,7 +2,7 @@
   {
     "itemName": "shi",
     "imageName": "as_shi.png",
-    "roiFront": "1192,223,31,35",
+    "roiFront": "1186,225,33,31",
     "roiBack": "1155,115,98,473",
     "method": "Template matching",
     "threshold": 0.8,

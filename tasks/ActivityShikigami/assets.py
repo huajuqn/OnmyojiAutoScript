@@ -42,7 +42,7 @@ class ActivityShikigamiAssets:
 
 	# Image Rule Assets
 	# 庭院进入活动入口
-	I_SHI = RuleImage(roi_front=(1192,223,31,35), roi_back=(1155,115,98,473), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_shi.png")
+	I_SHI = RuleImage(roi_front=(1186,225,33,31), roi_back=(1155,115,98,473), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_shi.png")
 	# 左上角返回
 	I_BACK_GREEN = RuleImage(roi_front=(27,19,34,38), roi_back=(2,1,170,75), threshold=0.8, method="Template matching", file="./tasks/ActivityShikigami/as/as_back_green.png")
 	# 右上跳过按钮
