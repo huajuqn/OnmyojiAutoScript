@@ -63,6 +63,15 @@
     "description": "description"
   },
   {
+    "itemName": "ss_switch_confirm_current",
+    "imageName": "ss_switch_confirm_current.png",
+    "roiFront": "665,408,178,64",
+    "roiBack": "650,390,215,100",
+    "method": "Template matching",
+    "threshold": 0.85,
+    "description": "新版御魂预设确认按钮（OCR无法识别时使用）"
+  },
+  {
     "itemName": "sou_check_in",
     "imageName": "ss_sou_check_in.png",
     "roiFront": "269,69,50,49",

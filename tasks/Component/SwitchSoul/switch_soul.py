@@ -77,10 +77,22 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
         while 1:
             self.screenshot()
 
-            if self.ocr_appear(self.O_SS_SWITCH_CONFIRM):
+            # 所有状态分支都可能 continue，超时检查必须放在分支之前。
+            if timeout.reached():
+                logger.warning(f'Switch soul timeout: {description}')
+                return False
+
+            # 新版按钮的书法文字无法稳定被 OCR 检出，优先匹配图片，
+            # 保留 OCR 以兼容其他皮肤及契灵的二次确认弹窗。
+            confirm_image = self.appear(self.I_SS_SWITCH_CONFIRM_CURRENT)
+            if confirm_image or self.ocr_appear(self.O_SS_SWITCH_CONFIRM):
                 confirm_seen = True
                 confirm_clear_timer = None
-                if self.ocr_appear_click(self.O_SS_SWITCH_CONFIRM, interval=0.8):
+                if confirm_image:
+                    clicked = self.click(self.I_SS_SWITCH_CONFIRM_CURRENT, interval=0.8)
+                else:
+                    clicked = self.ocr_appear_click(self.O_SS_SWITCH_CONFIRM, interval=0.8)
+                if clicked:
                     confirm_click_count += 1
                     logger.info(f'Switch soul confirmation {confirm_click_count}: {description}')
                 # 弹窗动画期间背景中的“队伍预设”仍可被识别，必须等弹窗真正消失。
@@ -118,9 +130,6 @@ class SwitchSoul(BaseTask, SwitchSoulAssets):
                         sleep(0.3)
                         continue
 
-            if timeout.reached():
-                logger.warning(f'Switch soul timeout: {description}')
-                return False
             sleep(0.3)
 
     def switch_soul_one(self, group: int, team: int) -> None:
