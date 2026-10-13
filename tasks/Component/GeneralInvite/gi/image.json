@@ -335,11 +335,11 @@
   {
     "itemName": "gi_sure",
     "imageName": "gi_gi_sure.png",
-    "roiFront": "670,402,175,60",
-    "roiBack": "670,402,175,60",
+    "roiFront": "665,408,178,64",
+    "roiBack": "620,370,270,130",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "队长邀请 确定"
+    "description": "中心弹窗新版确定按钮（含狩猎挑战／退出队伍）"
   },
   {
     "itemName": "gi_buff",

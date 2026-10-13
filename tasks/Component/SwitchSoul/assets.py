@@ -53,7 +53,7 @@ class SwitchSoulAssets:
 	# description
 	I_SOU_SWITCH_4 = RuleImage(roi_front=(978,603,25,22), roi_back=(962,592,53,34), threshold=0.8, method="Template matching", file="./tasks/Component/SwitchSoul/ss/ss_sou_switch_4.png")
 	# description
-	I_SOU_SWITCH_SURE = RuleImage(roi_front=(668,401,180,61), roi_back=(668,401,180,61), threshold=0.8, method="Template matching", file="./tasks/Component/SwitchSoul/ss/ss_sou_switch_sure.png")
+	I_SOU_SWITCH_SURE = RuleImage(roi_front=(665,408,178,64), roi_back=(620,370,270,130), threshold=0.8, method="Template matching", file="./tasks/Component/SwitchSoul/ss/ss_sou_switch_sure.png")
 	# 新版御魂预设确认按钮（OCR无法识别时使用）
 	I_SS_SWITCH_CONFIRM_CURRENT = RuleImage(roi_front=(665,408,178,64), roi_back=(650,390,215,100), threshold=0.85, method="Template matching", file="./tasks/Component/SwitchSoul/ss/ss_switch_confirm_current.png")
 	# 用于判断是否在式神录里面

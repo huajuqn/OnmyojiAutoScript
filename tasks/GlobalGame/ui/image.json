@@ -2,26 +2,26 @@
   {
     "itemName": "ui_confirm",
     "imageName": "ui_ui_confirm.png",
-    "roiFront": "667,398,179,66",
-    "roiBack": "667,398,179,66",
+    "roiFront": "665,408,178,64",
+    "roiBack": "620,370,270,130",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "长一点的确认"
+    "description": "中心弹窗新版确定按钮（含狩猎挑战／退出队伍）"
   },
   {
     "itemName": "ui_cancel",
     "imageName": "ui_ui_cancel.png",
-    "roiFront": "432,403,177,62",
-    "roiBack": "432,403,177,62",
+    "roiFront": "436,407,179,66",
+    "roiBack": "380,370,270,130",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "长一点的取消"
+    "description": "中心弹窗新版取消按钮"
   },
   {
     "itemName": "ui_reward",
     "imageName": "ui_ui_reward.png",
-    "roiFront": "481,185,317,42",
-    "roiBack": "464,142,350,145",
+    "roiFront": "517,207,246,71",
+    "roiBack": "420,160,440,180",
     "method": "Template matching",
     "threshold": 0.73,
     "description": "'获得奖励' 四个大字"
