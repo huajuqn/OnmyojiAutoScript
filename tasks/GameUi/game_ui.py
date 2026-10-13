@@ -286,12 +286,8 @@ class GameUi(BaseTask, GameUiAssets):
                 if timeout_timer.reached():
                     return False
                 if isinstance(button, list):
-                    # 第一个通常是目标入口，后续按钮只用于翻动/展开入口列表。
-                    # 目标入口点击成功后必须短路，避免在页面切换动画期间继续误点备用按钮。
-                    if self.appear_then_operate(button[0], interval=0.8, skip_first_screenshot=False):
+                    if self._operate_entry_buttons(button, interval=0.8):
                         break
-                    for btn in button[1:]:
-                        self.appear_then_operate(btn, interval=0.8, skip_first_screenshot=False)
                     continue
                 if self.appear_then_operate(button, interval=0.8, skip_first_screenshot=False):
                     break
@@ -313,6 +309,21 @@ class GameUi(BaseTask, GameUiAssets):
                 # 重新获取当前页
                 self.ui_get_current_page(skip_first_screenshot=False)
         return self.ui_current == path[-1]
+
+    def _operate_entry_buttons(self, buttons, interval=0.8):
+        """入口可见时只尝试入口，点击冷却不能触发列表刷新。"""
+        self.screenshot()
+        primary = buttons[0]
+        if isinstance(primary, (RuleImage, RuleGif, RuleOcr)):
+            if self.appear(primary):
+                return self.appear_then_operate(primary, interval=interval, skip_first_screenshot=True)
+        elif self.appear_then_operate(primary, interval=interval, skip_first_screenshot=True):
+            return True
+        # 同一帧确定入口不存在才执行备用操作，避免两次截图间入口刚好出现。
+        for button in buttons[1:]:
+            if self.appear_then_operate(button, interval=interval, skip_first_screenshot=True):
+                break
+        return False
 
     def run_additional(self, page: Page, interval: float = None, skip_first_screenshot: bool = True):
         """执行页面附加操作"""

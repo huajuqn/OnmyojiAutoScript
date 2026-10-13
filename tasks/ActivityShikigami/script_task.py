@@ -151,7 +151,7 @@ class ScriptTask(StateMachine, GameUi, BaseActivity, SwitchSoul, ActivityShikiga
     def ui_page_appear(self, page, skip_first_screenshot=True, interval=None):
         # 庭院皮肤更换后通用庭院标志可能失效，当期活动入口也可确认庭院。
         self.maybe_screenshot(skip_first_screenshot)
-        if page is game.page_main and self.appear(self.I_SHI, interval=interval):
+        if page is game.page_main and self.appear(self.I_SHI):
             return True
         return super().ui_page_appear(page, skip_first_screenshot=True, interval=interval)
 
