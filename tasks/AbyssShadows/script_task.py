@@ -549,9 +549,11 @@ class ScriptTask(GeneralBattle, GameUi, SwitchSoul, AbyssShadowsAssets):
         # 点击返回
         while 1:
             self.screenshot()
-            if self.appear_then_click(self.I_EXIT, interval=2):
+            # 弹窗存在时优先确认，避免背景返回图标仍可识别而反复点击。
+            if self.appear(self.I_EXIT_ENSURE):
+                self.appear_then_click(self.I_EXIT_ENSURE, interval=2)
                 continue
-            if self.appear_then_click(self.I_EXIT_ENSURE, interval=2):
+            if self.appear_then_click(self.I_EXIT, interval=2):
                 continue
             if self.appear_then_click(self.I_WIN, interval=2):
                 continue

@@ -47,8 +47,8 @@
   {
     "itemName": "harvest_mail_all",
     "imageName": "harvest_harvest_mail_all.png",
-    "roiFront": "69,579,80,67",
-    "roiBack": "28,551,142,144",
+    "roiFront": "70,581,79,60",
+    "roiBack": "40,550,135,125",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "全部收取"
@@ -65,8 +65,8 @@
   {
     "itemName": "harvest_mail_confirm",
     "imageName": "harvest_harvest_mail_confirm.png",
-    "roiFront": "687,543,168,64",
-    "roiBack": "687,543,168,64",
+    "roiFront": "675,546,175,59",
+    "roiBack": "640,515,240,120",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "确认收取邮件"
@@ -83,8 +83,8 @@
   {
     "itemName": "harvest_mail_title",
     "imageName": "harvest_harvest_mail_title.png",
-    "roiFront": "520,48,245,41",
-    "roiBack": "520,48,245,41",
+    "roiFront": "608,61,67,34",
+    "roiBack": "560,40,160,70",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "description"

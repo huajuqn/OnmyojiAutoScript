@@ -273,7 +273,11 @@ class AssetsExtractor:
         获取所有json文件
         :return: json文件（带后缀）列表
         """
-        return [str(x) for x in self.task_path.rglob('*.json') if 'temp' not in str(x)]
+        # 本地备份不能进入正式资源，否则同名定义会覆盖刚更新的图片路径。
+        return [str(x) for x in self.task_path.rglob('*.json')
+                if 'temp' not in str(x)
+                and not any('备份' in part or 'beifen' in part.lower()
+                            for part in x.relative_to(self.task_path).parts)]
 
     @classmethod
     def read_file(cls, file: str) -> list:

@@ -338,34 +338,53 @@ class LoginHandler(BaseTask, RestartAssets, GameUiAssets, GeneralBuffAssets):
         self.O_LOGIN_SPECIFIC_SERVE.keyword = character
 
     def harvest_mail(self) -> bool:
-        if not self.appear_multi_scale(self.I_HARVEST_MAIL,scale_range=(0.8, 1.1)) and \
-                not self.appear(self.I_HARVEST_MAIL_COPY):
-            if not self.appear(self.I_READ_ALL_MAIL):
-                return False
+        mail_visible = (self.appear(self.I_HARVEST_MAIL_TITLE)
+                        or self.appear(self.I_HARVEST_MAIL_ALL)
+                        or self.appear(self.I_HARVEST_MAIL_CONFIRM)
+                        or self.appear(self.I_UI_REWARD, threshold=0.6))
+        if not mail_visible and not self.appear_multi_scale(self.I_HARVEST_MAIL, scale_range=(0.8, 1.1)) \
+                and not self.appear(self.I_HARVEST_MAIL_COPY):
+            return False
         logger.info('Harvest mail')
+        open_timer = Timer(10).start()
         while 1:
             self.screenshot()
-            if self.appear(self.I_READ_ALL_MAIL):
+            if (self.appear(self.I_HARVEST_MAIL_TITLE)
+                    or self.appear(self.I_HARVEST_MAIL_CONFIRM)
+                    or self.appear(self.I_UI_REWARD, threshold=0.6)):
                 break
+            if open_timer.reached():
+                logger.warning('Open mail timeout')
+                return False
             if self.appear_then_click_multi_scale(self.I_HARVEST_MAIL, interval=1.5, scale_range=(0.8, 1.1)):
                 continue
             if self.appear_then_click(self.I_HARVEST_MAIL_COPY, interval=1.5):
                 continue
-        timeout_timer = Timer(3).start()
+        timeout_timer = Timer(20).start()
+        idle_timer = Timer(2).start()
+        confirmed = False
         logger.info('Exec harvest mail')
         while 1:
             self.screenshot()
             if timeout_timer.reached():
+                logger.warning('Harvest mail timeout')
+                return False
+            # 奖励标题随奖励面板高度上下移动，处理完弹窗才能关闭邮箱。
+            if self.appear(self.I_UI_REWARD, threshold=0.6):
+                self.ui_reward_appear_click()
+                idle_timer.reset()
+                continue
+            if self.appear(self.I_HARVEST_MAIL_CONFIRM):
+                if self.appear_then_click(self.I_HARVEST_MAIL_CONFIRM, interval=0.8):
+                    confirmed = True
+                idle_timer.reset()
+                continue
+            if not confirmed and self.appear(self.I_HARVEST_MAIL_ALL):
+                self.appear_then_click(self.I_HARVEST_MAIL_ALL, interval=1.5)
+                idle_timer.reset()
+                continue
+            if self.appear(self.I_HARVEST_MAIL_TITLE) and idle_timer.reached():
                 break
-            if self.appear_then_click(self.I_HARVEST_MAIL_CONFIRM, interval=0.8):
-                break
-
-            if self.appear_then_click(self.I_READ_ALL_MAIL, interval=1.5):
-                continue
-            if self.appear_then_click(self.I_HARVEST_MAIL_ALL, interval=1.5):
-                continue
-            if self.appear_then_click(self.I_MAIL_RED_POINT, interval=4):
-                continue
         self.ui_click_until_disappear(self.I_LOGIN_RED_CLOSE)
         return True
     
