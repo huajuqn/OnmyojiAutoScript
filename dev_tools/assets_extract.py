@@ -72,6 +72,9 @@ class ImageExtractor:
                     f'threshold={item["threshold"]}, ' \
                     f'method="{item["method"]}", ' \
                     f'file="./{self.image_path}/{item["imageName"]}")\n'
+        if item.get('alternateImages'):
+            files = [f'./{self.image_path}/{image}' for image in item['alternateImages']]
+            name = name.rstrip('\n')[:-1] + f', alternate_files={files!r})\n'
         return description + name
 
 

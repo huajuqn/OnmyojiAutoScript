@@ -291,7 +291,7 @@
     "itemName": "i_accept",
     "imageName": "gi_i_accept.png",
     "roiFront": "113,225,63,72",
-    "roiBack": "113,225,63,280",
+    "roiBack": "90,190,110,340",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "队员接受邀请"
@@ -308,8 +308,8 @@
   {
     "itemName": "i_no_default",
     "imageName": "gi_i_no_default.png",
-    "roiFront": "542,343,36,35",
-    "roiBack": "542,343,36,35",
+    "roiFront": "545,345,33,33",
+    "roiBack": "530,330,65,65",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "不勾选 默认邀请"
@@ -317,8 +317,8 @@
   {
     "itemName": "i_default",
     "imageName": "gi_i_default.png",
-    "roiFront": "541,342,41,39",
-    "roiBack": "541,342,41,39",
+    "roiFront": "545,345,33,33",
+    "roiBack": "530,330,65,65",
     "method": "Template matching",
     "threshold": 0.8,
     "description": "勾选 默认邀请"

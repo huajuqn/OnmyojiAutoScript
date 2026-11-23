@@ -76,13 +76,13 @@ class GeneralInviteAssets:
 	# 队员不接受邀请
 	I_I_REJECT_3 = RuleImage(roi_front=(5,430,110,95), roi_back=(5,430,110,95), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_reject.png")
 	# 队员接受邀请
-	I_I_ACCEPT = RuleImage(roi_front=(113,225,63,72), roi_back=(113,225,63,280), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_accept.png")
+	I_I_ACCEPT = RuleImage(roi_front=(113,225,63,72), roi_back=(90,190,110,340), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_accept.png")
 	# 队员默认接受邀请
 	I_I_ACCEPT_DEFAULT = RuleImage(roi_front=(205,223,61,68), roi_back=(205,223,61,297), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_accept_default.png")
 	# 不勾选 默认邀请
-	I_I_NO_DEFAULT = RuleImage(roi_front=(542,343,36,35), roi_back=(542,343,36,35), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_no_default.png")
+	I_I_NO_DEFAULT = RuleImage(roi_front=(545,345,33,33), roi_back=(530,330,65,65), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_no_default.png")
 	# 勾选 默认邀请
-	I_I_DEFAULT = RuleImage(roi_front=(541,342,41,39), roi_back=(541,342,41,39), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_default.png")
+	I_I_DEFAULT = RuleImage(roi_front=(545,345,33,33), roi_back=(530,330,65,65), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_i_default.png")
 	# description
 	I_GI_CANCEL = RuleImage(roi_front=(438,407,171,55), roi_back=(438,407,171,55), threshold=0.8, method="Template matching", file="./tasks/Component/GeneralInvite/gi/gi_cancel.png")
 	# 中心弹窗新版确定按钮（含狩猎挑战／退出队伍）

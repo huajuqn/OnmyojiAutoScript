@@ -128,11 +128,14 @@
   {
     "itemName": "check_team",
     "imageName": "page_check_team.png",
-    "roiFront": "32,585,82,90",
-    "roiBack": "32,585,82,90",
+    "roiFront": "25,580,90,90",
+    "roiBack": "0,545,145,150",
     "method": "Template matching",
-    "threshold": 0.63,
-    "description": "description"
+    "threshold": 0.8,
+    "description": "组队列表左下角：同心队或低等级未解锁小人，任一匹配即通过",
+    "alternateImages": [
+      "page_check_team_locked.png"
+    ]
   },
   {
     "itemName": "check_collection",

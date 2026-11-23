@@ -16,7 +16,8 @@ from module.base.utils import is_approx_rectangle
 class RuleImage(RuleImageMallResourceMixin):
     debug_mode: bool = False
 
-    def __init__(self, roi_front: tuple, roi_back: tuple, method: str, threshold: float, file: str) -> None:
+    def __init__(self, roi_front: tuple, roi_back: tuple, method: str, threshold: float, file: str,
+                 alternate_files=None) -> None:
         """
         初始化
         :param roi_front: 前置roi
@@ -35,6 +36,12 @@ class RuleImage(RuleImageMallResourceMixin):
         self.roi_back = roi_back
         self.threshold = threshold
         self.file = file
+        self.alternate_files = alternate_files or []
+
+    @cached_property
+    def alternate_images(self):
+        return [cv2.cvtColor(cv2.imdecode(fromfile(path, dtype=uint8), -1), cv2.COLOR_BGR2RGB)
+                for path in self.alternate_files]
 
 
 
@@ -152,6 +159,18 @@ class RuleImage(RuleImageMallResourceMixin):
 
         source = self.corp(image)
         mat = self.image
+
+        if self.alternate_files:
+            # 多种外观共用同一个识别规则，任意一种命中即可；仍限制在指定区域。
+            for candidate in [mat] + self.alternate_images:
+                height, width = candidate.shape[:2]
+                if height > source.shape[0] or width > source.shape[1]:
+                    continue
+                _, score, _, location = cv2.minMaxLoc(cv2.matchTemplate(source, candidate, cv2.TM_CCOEFF_NORMED))
+                if score > threshold:
+                    self.roi_front = [location[0] + self.roi_back[0], location[1] + self.roi_back[1], width, height]
+                    return True
+            return False
 
         if mat is None or mat.shape[0] == 0 or mat.shape[1] == 0:
             logger.error(f"Template image is invalid: {mat.shape}")

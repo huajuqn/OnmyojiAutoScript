@@ -174,8 +174,8 @@ class GameUiAssets:
 	I_CHECK_MALL = RuleImage(roi_front=(147,527,82,82), roi_back=(147,527,82,82), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_check_mall.png")
 	# description
 	I_CHECK_GUILD = RuleImage(roi_front=(1072,630,49,46), roi_back=(1072,630,49,46), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_check_guild.png")
-	# description
-	I_CHECK_TEAM = RuleImage(roi_front=(32,585,82,90), roi_back=(32,585,82,90), threshold=0.63, method="Template matching", file="./tasks/GameUi/page/page_check_team.png")
+	# 组队列表左下角：同心队或低等级未解锁小人，任一匹配即通过
+	I_CHECK_TEAM = RuleImage(roi_front=(25,580,90,90), roi_back=(0,545,145,150), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_check_team.png", alternate_files=['./tasks/GameUi/page/page_check_team_locked.png'])
 	# description
 	I_CHECK_COLLECTION = RuleImage(roi_front=(579,639,63,65), roi_back=(118,626,1162,94), threshold=0.8, method="Template matching", file="./tasks/GameUi/page/page_check_collection.png")
 	# description
