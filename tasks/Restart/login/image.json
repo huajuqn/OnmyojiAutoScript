@@ -47,11 +47,11 @@
   {
     "itemName": "login_8",
     "imageName": "login_login_8.png",
-    "roiFront": "178,572,53,60",
-    "roiBack": "1,547,241,105",
+    "roiFront": "12,564,53,74",
+    "roiBack": "0,535,245,120",
     "method": "Template matching",
     "threshold": 0.8,
-    "description": "用于判断是否出现登录选区的"
+    "description": "登录页左下角黄色16+适龄提示（沿用资源名）"
   },
   {
     "itemName": "watch_video_cancel",
